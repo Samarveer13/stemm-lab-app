@@ -3,7 +3,7 @@
 
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ConductTab from "../../src/components/Conducttab";
 import ScreenContainer from "../../src/components/ScreenContainer";
 
@@ -54,6 +54,16 @@ export default function HandFanScreen() {
 
         {activeTab === 1 && <View>
           <Card><CTitle>Step-by-Step Instructions</CTitle>
+          <Image
+      source={require("../../assets/images/handfan.png")}
+      style={{
+        width: "100%",
+        height: 220,
+        borderRadius: 12,
+        marginBottom: 14,
+        resizeMode: "contain",
+      }}
+    />
             {["Stand paper upright on a table.","Fan air from 30 cm away using Design 1.","Observe and record the bend angle in degrees.","Repeat at 15 cm and 45 cm distances.","Try Design 2 and Design 3.","Repeat all tests using cardboard.","Record a video of each fan test in the Conduct tab."].map((s,i)=>(
               <View key={i} style={{flexDirection:"row",gap:8,marginBottom:10,alignItems:"flex-start"}}><StepBadge n={i+1}/><Text style={{flex:1,fontSize:14,color:"#4B5563",lineHeight:21}}>{s}</Text></View>
             ))}

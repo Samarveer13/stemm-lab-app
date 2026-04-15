@@ -4,9 +4,10 @@
 
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ConductTab from "../../src/components/Conducttab";
 import ScreenContainer from "../../src/components/ScreenContainer";
+
 
 type TrialRow = { label: string; prediction: string; time: string; correct: string; stopTime: string };
 const TAB_LABELS = ["Overview", "Instructions", "Conduct", "Results", "Science"];
@@ -49,6 +50,16 @@ export default function ParachuteScreen() {
 
         {activeTab === 1 && <View>
           <Card><CTitle>Step-by-Step Instructions</CTitle>
+         <Image
+      source={require("../../assets/images/parachute.png")}
+      style={{
+        width: "100%",
+        height: 220,
+        borderRadius: 12,
+        marginBottom: 14,
+        resizeMode: "contain",
+      }}
+    />
             {["Drop toy WITHOUT parachute – record the fall (baseline).","Build a parachute with provided materials.","Drop from the SAME height – record fall.","Review speed results.","Redesign and test up to 3 prototypes within 20 min.","Upload videos in the Conduct tab."].map((s,i)=>(
               <View key={i} style={{flexDirection:"row",gap:8,marginBottom:10,alignItems:"flex-start"}}><StepBadge n={i+1}/><Text style={{flex:1,fontSize:14,color:"#4B5563",lineHeight:21}}>{s}</Text></View>
             ))}</Card>

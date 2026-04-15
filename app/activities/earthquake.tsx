@@ -3,11 +3,12 @@
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
 
@@ -132,6 +133,16 @@ export default function EarthquakeScreen() {
         {activeTab === 1 && (
           <View>
             <Card><Title>Step-by-Step Instructions</Title>
+            <Image
+      source={require("../../assets/images/earthquake.png")}
+      style={{
+        width: "100%",
+        height: 220,
+        borderRadius: 12,
+        marginBottom: 14,
+        resizeMode: "contain",
+      }}
+    />
               {[
                 "Build an anti-vibration layer by folding paper or cardboard.",
                 "Place a flat cardboard platform on top of your structure.",

@@ -3,11 +3,12 @@
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
 
@@ -241,6 +242,16 @@ export default function ReactionScreen() {
         {activeTab === 0 && (
           <View>
             <Card><Title>Overview</Title>
+            <Image
+      source={require("../../assets/images/reaction.png")}
+      style={{
+        width: "100%",
+        height: 220,
+        borderRadius: 12,
+        marginBottom: 14,
+        resizeMode: "contain",
+      }}
+    />
               <Body>Students measure reaction time and coordination through three progressive challenges: a simple tap test, a non-dominant hand test, and a moving target tracing challenge.</Body>
             </Card>
             <Card><Title>Three Phases</Title>

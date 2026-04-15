@@ -4,12 +4,13 @@
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
-    Animated,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Animated,
+  Image,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
 
@@ -176,6 +177,17 @@ export default function BreathingScreen() {
               ))}
             </Card>
             <Card><Title>Step-by-Step Instructions</Title>
+            <Image
+      source={require("../../assets/images/breathing.png")}
+      style={{
+        width: "100%",
+        height: 220,
+        borderRadius: 12,
+        marginBottom: 14,
+        resizeMode: "contain",
+      }}
+    />
+            
               {[
                 "Lie down or sit still — rest for 1 minute.",
                 "Place phone FACE UP, gently on your chest.",

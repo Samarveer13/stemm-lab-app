@@ -5,11 +5,12 @@ import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import {
   Alert,
+  Image,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
 
@@ -163,6 +164,16 @@ export default function SoundScreen() {
           <View>
             <Card>
               <Title>Step-by-Step Instructions</Title>
+              <Image
+      source={require("../../assets/images/sound.png")}
+      style={{
+        width: "100%",
+        height: 220,
+        borderRadius: 12,
+        marginBottom: 14,
+        resizeMode: "contain",
+      }}
+    />
               {[
                 "Open the Measure tab and tap Start.",
                 "Perform Action 1 (e.g. drop a book on the table) and observe the dB reading.",

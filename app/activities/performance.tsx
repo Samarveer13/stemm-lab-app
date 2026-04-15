@@ -3,11 +3,12 @@
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
 
@@ -147,6 +148,16 @@ export default function PerformanceScreen() {
               ))}
             </Card>
             <Card><Title>Step-by-Step Instructions</Title>
+            <Image
+      source={require("../../assets/images/performance.png")}
+      style={{
+        width: "100%",
+        height: 220,
+        borderRadius: 12,
+        marginBottom: 14,
+        resizeMode: "contain",
+      }}
+    />
               {[
                 "Hold the phone firmly in one hand.",
                 "Go to the Sensor tab and select your movement.",
