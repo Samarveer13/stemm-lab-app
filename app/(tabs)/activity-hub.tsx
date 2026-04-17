@@ -1,6 +1,6 @@
-import { Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
 
 type ActivityItem = {
@@ -33,7 +33,7 @@ export default function ActivitiesScreen() {
       title: "Hand Fan Challenge",
       category: "Physics",
       group: "Physics",
-      route: "/activities/handFan",
+      route: "/activities/handfan",
     },
     {
       title: "Earthquake-Resistant Structure",
