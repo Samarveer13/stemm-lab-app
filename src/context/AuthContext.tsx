@@ -10,10 +10,12 @@ interface AuthState {
   loading: boolean;
   teamReady: boolean;
   studentName: string;
+  teamName: string;
+  yearLevel: string;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
-  completeTeamSetup: (studentName: string) => void;
+  completeTeamSetup: (studentName: string, teamName: string, yearLevel: string) => void;
 }
 
 const AuthContext = createContext<AuthState>({
@@ -21,6 +23,8 @@ const AuthContext = createContext<AuthState>({
   loading: true,
   teamReady: false,
   studentName: "",
+  teamName: "",
+  yearLevel: "",
   login: async () => {},
   register: async () => {},
   logout: async () => {},
@@ -32,6 +36,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [teamReady, setTeamReady] = useState(false);
   const [studentName, setStudentName] = useState("");
+  const [teamName, setTeamName] = useState("");
+  const [yearLevel, setYearLevel] = useState("");
 
   useEffect(() => {
     // Mirrors the async nature of Firebase's onAuthStateChanged so the
@@ -42,28 +48,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, _password: string) => {
     setTeamReady(false);
     setStudentName("");
+    setTeamName("");
+    setYearLevel("");
     setUser({ displayName: email.split("@")[0] || "Student", email });
   };
 
   const register = async (email: string, _password: string, name: string) => {
     setTeamReady(false);
     setStudentName("");
+    setTeamName("");
+    setYearLevel("");
     setUser({ displayName: name, email });
   };
 
   const logout = async () => {
     setTeamReady(false);
     setStudentName("");
+    setTeamName("");
+    setYearLevel("");
     setUser(null);
   };
 
-  const completeTeamSetup = (name: string) => {
+  const completeTeamSetup = (name: string, team: string, year: string) => {
     setStudentName(name);
+    setTeamName(team);
+    setYearLevel(year);
     setTeamReady(true);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, teamReady, studentName, login, register, logout, completeTeamSetup }}>
+    <AuthContext.Provider value={{ user, loading, teamReady, studentName, teamName, yearLevel, login, register, logout, completeTeamSetup }}>
       {children}
     </AuthContext.Provider>
   );

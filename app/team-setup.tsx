@@ -29,7 +29,7 @@ export default function TeamSetupScreen() {
   });
 
   function handleCreate() {
-    completeTeamSetup(studentName.trim());
+    completeTeamSetup(studentName.trim(), teamName.trim(), selectedYear ?? "");
 
     router.replace({
       pathname: "/(tabs)",
