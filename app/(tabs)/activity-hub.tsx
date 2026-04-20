@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
+import { useAccessibility } from "../../src/context/AccessibilityContext";
 
 type ActivityItem = {
   title: string;
@@ -13,6 +14,13 @@ type ActivityItem = {
 export default function ActivitiesScreen() {
   const router = useRouter();
   const [selectedFilter, setSelectedFilter] = useState("All");
+  const { colors, fontSize, fontFamily } = useAccessibility();
+
+  const text = (size: number, extra?: object) => ({
+    fontSize: size + (fontSize - 14),
+    fontFamily,
+    ...extra,
+  });
 
   const filters = ["All", "Physics", "Engineering", "Environmental", "Health"];
 
@@ -82,9 +90,9 @@ export default function ActivitiesScreen() {
       >
         <Text
           style={{
+            ...text(18),
             textAlign: "center",
-            fontSize: 18,
-            color: "#3B82F6",
+            color: colors.primary,
             fontWeight: "600",
             marginBottom: 30,
           }}
@@ -94,10 +102,10 @@ export default function ActivitiesScreen() {
 
         <Text
           style={{
+            ...text(24),
             textAlign: "center",
-            fontSize: 24,
             fontWeight: "700",
-            color: "#1F2937",
+            color: colors.textMain,
             marginBottom: 18,
           }}
         >
@@ -117,10 +125,10 @@ export default function ActivitiesScreen() {
           <View
             style={{
               flexDirection: "row",
-              backgroundColor: "#FFFFFF",
+              backgroundColor: colors.card,
               borderRadius: 12,
               borderWidth: 1,
-              borderColor: "#E5E7EB",
+              borderColor: colors.border,
               padding: 4,
             }}
           >
@@ -134,14 +142,14 @@ export default function ActivitiesScreen() {
                   borderRadius: 10,
                   marginRight: index === filters.length - 1 ? 0 : 6,
                   backgroundColor:
-                    selectedFilter === filter ? "#EFF6FF" : "transparent",
+                    selectedFilter === filter ? colors.primarySelected : "transparent",
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 13,
+                    ...text(13),
                     fontWeight: selectedFilter === filter ? "600" : "500",
-                    color: selectedFilter === filter ? "#3B82F6" : "#9CA3AF",
+                    color: selectedFilter === filter ? colors.primary : colors.textSub,
                   }}
                 >
                   {filter}
@@ -155,10 +163,10 @@ export default function ActivitiesScreen() {
           <View
             key={activity.title}
             style={{
-              backgroundColor: "#FFFFFF",
+              backgroundColor: colors.card,
               borderRadius: 14,
               borderWidth: 1,
-              borderColor: "#E5E7EB",
+              borderColor: colors.border,
               paddingVertical: 14,
               paddingHorizontal: 14,
               marginBottom: 16,
@@ -170,21 +178,16 @@ export default function ActivitiesScreen() {
             <View style={{ flex: 1, paddingRight: 12 }}>
               <Text
                 style={{
-                  fontSize: 16,
+                  ...text(16),
                   fontWeight: "600",
-                  color: "#4B5563",
+                  color: colors.textMain,
                   marginBottom: 4,
                 }}
               >
                 {activity.title}
               </Text>
 
-              <Text
-                style={{
-                  fontSize: 13,
-                  color: "#9CA3AF",
-                }}
-              >
+              <Text style={{ ...text(13), color: colors.textSub }}>
                 {activity.category}
               </Text>
             </View>
@@ -192,19 +195,13 @@ export default function ActivitiesScreen() {
             <TouchableOpacity
               onPress={() => router.push(activity.route as any)}
               style={{
-                backgroundColor: "#3B82F6",
+                backgroundColor: colors.primary,
                 borderRadius: 8,
                 paddingVertical: 8,
                 paddingHorizontal: 16,
               }}
             >
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: 14,
-                  fontWeight: "600",
-                }}
-              >
+              <Text style={{ ...text(14), color: "#FFFFFF", fontWeight: "600" }}>
                 Start
               </Text>
             </TouchableOpacity>

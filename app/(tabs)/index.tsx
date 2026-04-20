@@ -2,25 +2,27 @@ import { Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import CustomButton from "../../src/components/CustomButton";
+import { useAccessibility } from "../../src/context/AccessibilityContext";
 
 export default function HomeScreen() {
   const { name } = useLocalSearchParams();
   const router = useRouter();
+  const { colors, fontSize, fontFamily } = useAccessibility();
+
+  const text = (size: number, extra?: object) => ({
+    fontSize: size + (fontSize - 14),
+    fontFamily,
+    ...extra,
+  });
 
   return (
     <ScreenContainer>
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 20,
-          paddingTop: 70,
-        }}
-      >
+      <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 70 }}>
         <Text
           style={{
+            ...text(18),
             textAlign: "center",
-            fontSize: 18,
-            color: "#3B82F6",
+            color: colors.primary,
             fontWeight: "600",
             marginBottom: 30,
           }}
@@ -30,11 +32,11 @@ export default function HomeScreen() {
 
         <Text
           style={{
+            ...text(22),
             textAlign: "center",
-            fontSize: 22,
             fontWeight: "700",
             marginBottom: 40,
-            color: "#1F2937",
+            color: colors.textMain,
           }}
         >
           Welcome {name || "Student"}
@@ -52,31 +54,31 @@ export default function HomeScreen() {
 
         <View
           style={{
-            backgroundColor: "#FFFFFF",
+            backgroundColor: colors.card,
             borderRadius: 14,
             padding: 16,
             marginTop: 20,
             borderWidth: 1,
-            borderColor: "#E5E7EB",
+            borderColor: colors.border,
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
           <View>
-            <Text style={{ color: "#6B7280", marginBottom: 4 }}>
+            <Text style={{ ...text(14), color: colors.textSub, marginBottom: 4 }}>
               Team Progress
             </Text>
-            <Text style={{ color: "#9CA3AF" }}>
+            <Text style={{ ...text(13), color: colors.textSub }}>
               Experiments Completed: 6
             </Text>
           </View>
 
           <Text
             style={{
-              fontSize: 24,
+              ...text(24),
               fontWeight: "700",
-              color: "#1F2937",
+              color: colors.textMain,
             }}
           >
             120
