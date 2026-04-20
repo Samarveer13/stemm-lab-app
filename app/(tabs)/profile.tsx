@@ -35,6 +35,7 @@ export default function ProfileScreen() {
           Student Profile
         </Text>
 
+        {/* PROFILE CARD */}
         <View
           style={{
             backgroundColor: "#FFFFFF",
@@ -63,6 +64,44 @@ export default function ProfileScreen() {
 
           <Text style={{ color: "#6B7280" }}>
             Total Score: 120
+          </Text>
+        </View>
+
+        {/* 🔥 NEW LEADERBOARD CARD */}
+        <View
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: 14,
+            padding: 16,
+            borderWidth: 1,
+            borderColor: "#E5E7EB",
+            marginBottom: 20,
+          }}
+        >
+          <Text style={{ fontWeight: "600", marginBottom: 10 }}>
+            Leaderboard
+          </Text>
+
+          <Text style={{ color: "#6B7280" }}>
+            1. Team Alpha — 150 pts
+          </Text>
+
+          <Text style={{ color: "#6B7280" }}>
+            2. Team Beta — 120 pts
+          </Text>
+
+          <Text style={{ color: "#6B7280" }}>
+            3. Team Charlie — 100 pts
+          </Text>
+
+          <Text
+            style={{
+              marginTop: 10,
+              color: "#3B82F6",
+              fontWeight: "600",
+            }}
+          >
+            Your Team: 2nd Place 🎉
           </Text>
         </View>
       </View>
