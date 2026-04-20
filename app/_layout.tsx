@@ -4,7 +4,7 @@ import { AccessibilityProvider } from "../src/context/AccessibilityContext";
 import { AuthProvider, useAuth } from "../src/context/AuthContext";
 
 function RootNavigator() {
-  const { user, loading } = useAuth();
+  const { user, loading, teamReady } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
@@ -12,13 +12,20 @@ function RootNavigator() {
     if (loading) return;
 
     const inAuthGroup = segments[0] === "(auth)";
+    const inTeamSetup = segments[0] === "team-setup";
+    const inTabs = segments[0] === "(tabs)";
 
-    if (!user && !inAuthGroup) {
-      router.replace("/(auth)/login");
-    } else if (user && inAuthGroup) {
-      router.replace("/(tabs)");
+    if (!user) {
+      // Not logged in → go to login
+      if (!inAuthGroup) router.replace("/(auth)/login");
+    } else if (!teamReady) {
+      // Logged in but team not set up yet
+      if (!inTeamSetup) router.replace("/team-setup");
+    } else {
+      // Fully authenticated + team ready
+      if (!inTabs) router.replace("/(tabs)");
     }
-  }, [user, loading, segments]);
+  }, [user, loading, teamReady, segments]);
 
   return <Stack screenOptions={{ headerShown: false }} />;
 }

@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-// Minimal user shape matching Firebase's User fields we actually use
 interface MockUser {
   displayName: string | null;
   email: string | null;
@@ -9,22 +8,27 @@ interface MockUser {
 interface AuthState {
   user: MockUser | null;
   loading: boolean;
+  teamReady: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
+  completeTeamSetup: () => void;
 }
 
 const AuthContext = createContext<AuthState>({
   user: null,
-  loading: false,
+  loading: true,
+  teamReady: false,
   login: async () => {},
   register: async () => {},
   logout: async () => {},
+  completeTeamSetup: () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<MockUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [teamReady, setTeamReady] = useState(false);
 
   useEffect(() => {
     // Mirrors the async nature of Firebase's onAuthStateChanged so the
@@ -33,19 +37,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, _password: string) => {
+    setTeamReady(false);
     setUser({ displayName: email.split("@")[0] || "Student", email });
   };
 
   const register = async (email: string, _password: string, name: string) => {
+    setTeamReady(false);
     setUser({ displayName: name, email });
   };
 
   const logout = async () => {
+    setTeamReady(false);
     setUser(null);
   };
 
+  const completeTeamSetup = () => {
+    setTeamReady(true);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, teamReady, login, register, logout, completeTeamSetup }}>
       {children}
     </AuthContext.Provider>
   );
