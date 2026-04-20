@@ -22,6 +22,18 @@ export default function ProfileScreen() {
         >
           STEMM Lab
         </Text>
+
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 22,
+            fontWeight: "700",
+            marginBottom: 30,
+            color: "#1F2937",
+          }}
+        >
+          Student Profile
+        </Text>
       </View>
     </ScreenContainer>
   );
