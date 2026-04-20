@@ -1,43 +1,64 @@
-import { Text, View } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Text, View, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import CustomButton from "../../src/components/CustomButton";
+import { useAccessibility } from "../../src/context/AccessibilityContext";
+import { useAuth } from "../../src/context/AuthContext";
 
 export default function HomeScreen() {
-  const { name } = useLocalSearchParams();
   const router = useRouter();
+  const { colors, fontSize, fontFamily } = useAccessibility();
+  const { user, logout, studentName } = useAuth();
+
+  const t = (size: number, extra?: object) => ({
+    fontSize: size + (fontSize - 14),
+    fontFamily,
+    ...extra,
+  });
+
+  async function handleLogout() {
+    await logout();
+  }
 
   return (
     <ScreenContainer>
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 20,
-          paddingTop: 70,
-        }}
-      >
-        <Text
-          style={{
-            textAlign: "center",
-            fontSize: 18,
-            color: "#3B82F6",
-            fontWeight: "600",
-            marginBottom: 30,
-          }}
-        >
-          STEMM Lab
-        </Text>
+      <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 70 }}>
+        {/* Header row */}
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 30 }}>
+          <Text style={{ ...t(18), color: colors.primary, fontWeight: "600", flex: 1, textAlign: "center" }}>
+            STEMM Lab
+          </Text>
+          <TouchableOpacity
+            onPress={handleLogout}
+            style={{
+              position: "absolute",
+              right: 0,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.card,
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Log out"
+          >
+            <Text style={{ ...t(12), color: colors.textSub, fontWeight: "600" }}>
+              Log out
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <Text
           style={{
+            ...t(22),
             textAlign: "center",
-            fontSize: 22,
             fontWeight: "700",
             marginBottom: 40,
-            color: "#1F2937",
+            color: colors.textMain,
           }}
         >
-          Welcome {name || "Student"}
+          Welcome {studentName || user?.displayName || "Student"}
         </Text>
 
         <CustomButton
@@ -52,33 +73,27 @@ export default function HomeScreen() {
 
         <View
           style={{
-            backgroundColor: "#FFFFFF",
+            backgroundColor: colors.card,
             borderRadius: 14,
             padding: 16,
             marginTop: 20,
             borderWidth: 1,
-            borderColor: "#E5E7EB",
+            borderColor: colors.border,
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
           <View>
-            <Text style={{ color: "#6B7280", marginBottom: 4 }}>
+            <Text style={{ ...t(14), color: colors.textSub, marginBottom: 4 }}>
               Team Progress
             </Text>
-            <Text style={{ color: "#9CA3AF" }}>
+            <Text style={{ ...t(13), color: colors.textSub }}>
               Experiments Completed: 6
             </Text>
           </View>
 
-          <Text
-            style={{
-              fontSize: 24,
-              fontWeight: "700",
-              color: "#1F2937",
-            }}
-          >
+          <Text style={{ ...t(24), fontWeight: "700", color: colors.textMain }}>
             120
           </Text>
         </View>
