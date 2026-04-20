@@ -55,11 +55,11 @@ export default function LoginScreen() {
           </Text>
 
           <Text style={[styles.title, { color: colors.textMain, ...t(26) }]}>
-            Welcome back
+            Welcome Back
           </Text>
 
           <Text style={[styles.subtitle, { color: colors.textSub, ...t(14) }]}>
-            Sign in to continue
+            Sign In To Continue
           </Text>
 
           {!!error && (
@@ -123,7 +123,7 @@ export default function LoginScreen() {
 
           <View style={styles.footer}>
             <Text style={[styles.footerText, { color: colors.textSub, ...t(14) }]}>
-              Don't have an account?{" "}
+              Don't Have An Account?{" "}
             </Text>
             <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
               <Text style={[styles.link, { color: colors.primary, ...t(14) }]}>
@@ -139,12 +139,12 @@ export default function LoginScreen() {
 
 function friendlyError(code: string): string {
   switch (code) {
-    case "auth/invalid-email": return "Invalid email address.";
-    case "auth/user-not-found": return "No account found with this email.";
-    case "auth/wrong-password": return "Incorrect password.";
-    case "auth/too-many-requests": return "Too many attempts. Try again later.";
-    case "auth/invalid-credential": return "Incorrect email or password.";
-    default: return "Something went wrong. Please try again.";
+    case "auth/invalid-email": return "Invalid Email Address.";
+    case "auth/user-not-found": return "No Account Found with this Email.";
+    case "auth/wrong-password": return "Incorrect Password.";
+    case "auth/too-many-requests": return "Too Many Attempts. Please Try Again Later.";
+    case "auth/invalid-credential": return "Incorrect Email or Password.";
+    default: return "Something Went Wrong. Please Try Again.";
   }
 }
 

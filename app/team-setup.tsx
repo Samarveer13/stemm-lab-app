@@ -19,36 +19,74 @@ export default function TeamSetupScreen() {
   const years = ["Year 4", "Year 5", "Year 6", "Year 7", "Year 8", "Year 9"];
 
   const isFormComplete =
-    teamName.trim() !== "" && studentName.trim() !== "" && selectedYear !== null;
+    teamName.trim() !== "" &&
+    studentName.trim() !== "" &&
+    selectedYear !== null;
 
-  const t = (size: number) => ({ fontSize: size + (fontSize - 14), fontFamily });
+  const t = (size: number) => ({
+    fontSize: size + (fontSize - 14),
+    fontFamily,
+  });
 
   function handleCreate() {
     completeTeamSetup(studentName.trim());
-    router.replace("/(tabs)");
+
+    router.replace({
+      pathname: "/(tabs)",
+      params: {
+        name: studentName.trim(),
+        team: teamName.trim(),
+        year: selectedYear ?? "",
+      },
+    });
   }
 
   return (
     <ScreenContainer>
-      <View style={{ flex: 1, alignItems: "center", paddingHorizontal: 20, paddingTop: 70 }}>
-        {/* Header */}
-        <View style={{ width: "100%", flexDirection: "row", alignItems: "center", marginBottom: 40 }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          paddingHorizontal: 20,
+          paddingTop: 70,
+        }}
+      >
+        <View
+          style={{
+            width: "100%",
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: 40,
+          }}
+        >
           <Text
             onPress={() => router.back()}
             style={{ ...t(20), color: colors.primary, marginRight: 10 }}
           >
             ←
           </Text>
-          <Text style={{ ...t(18), color: colors.primary, fontWeight: "600" }}>
+
+          <Text
+            style={{ ...t(18), color: colors.primary, fontWeight: "600" }}
+          >
             STEMM Lab
           </Text>
         </View>
 
-        <Text style={{ ...t(24), fontWeight: "700", marginBottom: 8, color: colors.textMain }}>
+        <Text
+          style={{
+            ...t(24),
+            fontWeight: "700",
+            marginBottom: 8,
+            color: colors.textMain,
+          }}
+        >
           Create Your Team
         </Text>
 
-        <Text style={{ ...t(14), color: colors.textSub, marginBottom: 30 }}>
+        <Text
+          style={{ ...t(14), color: colors.textSub, marginBottom: 30 }}
+        >
           Enter your Team Details
         </Text>
 
@@ -65,7 +103,6 @@ export default function TeamSetupScreen() {
             onChangeText={setStudentName}
           />
 
-          {/* Year Level Dropdown */}
           <TouchableOpacity
             onPress={() => setOpen(!open)}
             style={{
@@ -81,10 +118,18 @@ export default function TeamSetupScreen() {
               alignItems: "center",
             }}
           >
-            <Text style={{ ...t(15), color: selectedYear ? colors.textMain : colors.textSub }}>
+            <Text
+              style={{
+                ...t(15),
+                color: selectedYear ? colors.textMain : colors.textSub,
+              }}
+            >
               {selectedYear || "Year Level (e.g. Year 8)"}
             </Text>
-            <Text style={{ color: colors.textSub, fontSize: 18 }}>{open ? "˄" : "˅"}</Text>
+
+            <Text style={{ color: colors.textSub, fontSize: 18 }}>
+              {open ? "˄" : "˅"}
+            </Text>
           </TouchableOpacity>
 
           {open && (
@@ -101,7 +146,10 @@ export default function TeamSetupScreen() {
               {years.map((year, index) => (
                 <TouchableOpacity
                   key={year}
-                  onPress={() => { setSelectedYear(year); setOpen(false); }}
+                  onPress={() => {
+                    setSelectedYear(year);
+                    setOpen(false);
+                  }}
                   style={{
                     paddingVertical: 12,
                     paddingHorizontal: 16,
@@ -109,13 +157,17 @@ export default function TeamSetupScreen() {
                     borderBottomColor: colors.border,
                   }}
                 >
-                  <Text style={{ ...t(14), color: colors.textMain }}>{year}</Text>
+                  <Text style={{ ...t(14), color: colors.textMain }}>
+                    {year}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
           )}
 
-          <Text style={{ ...t(13), color: colors.textSub, marginBottom: 20 }}>
+          <Text
+            style={{ ...t(13), color: colors.textSub, marginBottom: 20 }}
+          >
             Team ID: Auto Generated
           </Text>
 
@@ -130,7 +182,9 @@ export default function TeamSetupScreen() {
               marginBottom: 12,
             }}
           >
-            <Text style={{ ...t(16), color: "#FFFFFF", fontWeight: "600" }}>
+            <Text
+              style={{ ...t(16), color: "#FFFFFF", fontWeight: "600" }}
+            >
               Create Team
             </Text>
           </TouchableOpacity>

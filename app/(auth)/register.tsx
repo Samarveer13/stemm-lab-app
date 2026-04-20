@@ -31,15 +31,15 @@ export default function RegisterScreen() {
 
   async function handleRegister() {
     if (!name.trim() || !email.trim() || !password || !confirm) {
-      setError("Please fill in all fields.");
+      setError("Please Fill In All Fields.");
       return;
     }
     if (password !== confirm) {
-      setError("Passwords do not match.");
+      setError("Passwords Do Not Match!");
       return;
     }
     if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setError("Password Must Be At Least 6 Characters.");
       return;
     }
     setError("");
@@ -69,11 +69,11 @@ export default function RegisterScreen() {
           </Text>
 
           <Text style={[styles.title, { color: colors.textMain, ...t(26) }]}>
-            Create account
+            Create Account
           </Text>
 
           <Text style={[styles.subtitle, { color: colors.textSub, ...t(14) }]}>
-            Join the STEMM Lab community
+            Join the STEMM Lab Community
           </Text>
 
           {!!error && (
@@ -142,7 +142,7 @@ export default function RegisterScreen() {
 
           <View style={styles.footer}>
             <Text style={[styles.footerText, { color: colors.textSub, ...t(14) }]}>
-              Already have an account?{" "}
+              Already Have An Account?{" "}
             </Text>
             <TouchableOpacity onPress={() => router.push("/(auth)/login")}>
               <Text style={[styles.link, { color: colors.primary, ...t(14) }]}>
