@@ -14,6 +14,7 @@ function RootNavigator() {
     const inAuthGroup = segments[0] === "(auth)";
     const inTeamSetup = segments[0] === "team-setup";
     const inTabs = segments[0] === "(tabs)";
+    const inActivities = segments[0] === "activities";
 
     if (!user) {
       // Not logged in → go to login
@@ -23,7 +24,7 @@ function RootNavigator() {
       if (!inTeamSetup) router.replace("/team-setup");
     } else {
       // Fully authenticated + team ready
-      if (!inTabs) router.replace("/(tabs)");
+      if (!inTabs && !inActivities) router.replace("/(tabs)");
     }
   }, [user, loading, teamReady, segments]);
 
