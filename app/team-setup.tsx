@@ -24,7 +24,7 @@ export default function TeamSetupScreen() {
   const t = (size: number) => ({ fontSize: size + (fontSize - 14), fontFamily });
 
   function handleCreate() {
-    completeTeamSetup();
+    completeTeamSetup(studentName.trim());
     router.replace("/(tabs)");
   }
 

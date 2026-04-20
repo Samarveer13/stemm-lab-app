@@ -8,7 +8,7 @@ import { useAuth } from "../../src/context/AuthContext";
 export default function HomeScreen() {
   const router = useRouter();
   const { colors, fontSize, fontFamily } = useAccessibility();
-  const { user, logout } = useAuth();
+  const { user, logout, studentName } = useAuth();
 
   const t = (size: number, extra?: object) => ({
     fontSize: size + (fontSize - 14),
@@ -58,7 +58,7 @@ export default function HomeScreen() {
             color: colors.textMain,
           }}
         >
-          Welcome {user?.displayName || "Student"}
+          Welcome {studentName || user?.displayName || "Student"}
         </Text>
 
         <CustomButton
