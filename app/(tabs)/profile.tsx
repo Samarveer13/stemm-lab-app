@@ -2,9 +2,13 @@ import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import CustomButton from "../../src/components/CustomButton";
+import { useAuth } from "../../src/context/AuthContext";
+import { useAccessibility } from "../../src/context/AccessibilityContext";
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { studentName, teamName, yearLevel } = useAuth();
+  const { colors } = useAccessibility();
 
   return (
     <ScreenContainer>
@@ -21,7 +25,7 @@ export default function ProfileScreen() {
             style={{
               textAlign: "center",
               fontSize: 18,
-              color: "#3B82F6",
+              color: colors.primary,
               fontWeight: "600",
               marginBottom: 30,
             }}
@@ -35,7 +39,7 @@ export default function ProfileScreen() {
               fontSize: 22,
               fontWeight: "700",
               marginBottom: 30,
-              color: "#1F2937",
+              color: colors.textMain,
             }}
           >
             Student Profile
@@ -43,65 +47,65 @@ export default function ProfileScreen() {
 
           <View
             style={{
-              backgroundColor: "#FFFFFF",
+              backgroundColor: colors.card,
               borderRadius: 14,
               padding: 16,
               borderWidth: 1,
-              borderColor: "#E5E7EB",
+              borderColor: colors.border,
               marginBottom: 20,
             }}
           >
-            <Text style={{ fontSize: 18, fontWeight: "600", marginBottom: 8 }}>
-              Mahnoor
+            <Text style={{ fontSize: 18, fontWeight: "600", marginBottom: 8, color: colors.textMain }}>
+              {studentName || "Student"}
             </Text>
 
-            <Text style={{ color: "#6B7280", marginBottom: 6 }}>
-              Year 8
+            <Text style={{ color: colors.textSub, marginBottom: 6 }}>
+              {yearLevel || "—"}
             </Text>
 
-            <Text style={{ color: "#6B7280", marginBottom: 6 }}>
-              Team: STEMM Explorers
+            <Text style={{ color: colors.textSub, marginBottom: 6 }}>
+              Team: {teamName || "—"}
             </Text>
 
-            <Text style={{ color: "#6B7280", marginBottom: 6 }}>
+            <Text style={{ color: colors.textSub, marginBottom: 6 }}>
               Experiments Completed: 6
             </Text>
 
-            <Text style={{ color: "#6B7280" }}>
+            <Text style={{ color: colors.textSub }}>
               Total Score: 120
             </Text>
           </View>
 
           <View
             style={{
-              backgroundColor: "#FFFFFF",
+              backgroundColor: colors.card,
               borderRadius: 14,
               padding: 16,
               borderWidth: 1,
-              borderColor: "#E5E7EB",
+              borderColor: colors.border,
               marginBottom: 20,
             }}
           >
-            <Text style={{ fontWeight: "600", marginBottom: 10 }}>
+            <Text style={{ fontWeight: "600", marginBottom: 10, color: colors.textMain }}>
               Leaderboard
             </Text>
 
-            <Text style={{ color: "#6B7280", marginBottom: 4 }}>
+            <Text style={{ color: colors.textSub, marginBottom: 4 }}>
               1. Team Alpha — 150 pts
             </Text>
 
-            <Text style={{ color: "#6B7280", marginBottom: 4 }}>
+            <Text style={{ color: colors.textSub, marginBottom: 4 }}>
               2. Team Beta — 120 pts
             </Text>
 
-            <Text style={{ color: "#6B7280" }}>
+            <Text style={{ color: colors.textSub }}>
               3. Team Charlie — 100 pts
             </Text>
 
             <Text
               style={{
                 marginTop: 10,
-                color: "#3B82F6",
+                color: colors.primary,
                 fontWeight: "600",
               }}
             >
