@@ -14,6 +14,7 @@ import {
   TextSize,
   FONT_FAMILY_MAP,
 } from "../../src/context/AccessibilityContext";
+import { useAuth } from "../../src/context/AuthContext";
 
 // ── sub-components ────────────────────────────────────────────────────────────
 
@@ -120,6 +121,7 @@ export default function SettingsScreen() {
     textSize, setTextSize,
     colors, fontSize, fontFamily,
   } = useAccessibility();
+  const { user, logout } = useAuth();
 
   return (
     <ScreenContainer>
@@ -197,6 +199,26 @@ export default function SettingsScreen() {
           >
             Preview — The quick brown fox jumps over the lazy dog.
           </Text>
+        </View>
+
+        {/* ── Account ── */}
+        <SectionHeader label="Account" color={colors.sectionLabel} />
+
+        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Text style={[styles.rowLabel, { color: colors.textMain, marginBottom: 2 }]}>
+            {user?.displayName || "Student"}
+          </Text>
+          <Text style={[styles.rowDesc, { color: colors.textSub, marginBottom: 16 }]}>
+            {user?.email || ""}
+          </Text>
+          <TouchableOpacity
+            onPress={logout}
+            style={[styles.logoutButton, { borderColor: "#F87171" }]}
+            accessibilityRole="button"
+            accessibilityLabel="Log out"
+          >
+            <Text style={styles.logoutText}>Log Out</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </ScreenContainer>
@@ -277,5 +299,16 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     borderTopWidth: 1,
     lineHeight: 22,
+  },
+  logoutButton: {
+    borderWidth: 1.5,
+    borderRadius: 10,
+    paddingVertical: 11,
+    alignItems: "center",
+  },
+  logoutText: {
+    color: "#DC2626",
+    fontWeight: "600",
+    fontSize: 15,
   },
 });
