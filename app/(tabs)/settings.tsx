@@ -137,7 +137,7 @@ export default function SettingsScreen() {
 
         <ToggleRow
           label="Dark Mode"
-          description="Switch to a dark colour scheme"
+          description="Switch to a Dark Colour Scheme"
           value={darkMode}
           onValueChange={setDarkMode}
           colors={colors}
@@ -145,7 +145,7 @@ export default function SettingsScreen() {
 
         <ToggleRow
           label="High Contrast"
-          description="Increase contrast for better readability"
+          description="Increase Contrast for Better Readability"
           value={highContrast}
           onValueChange={setHighContrast}
           colors={colors}
@@ -159,7 +159,7 @@ export default function SettingsScreen() {
             Text Size
           </Text>
           <Text style={[styles.rowDesc, { color: colors.textSub, marginBottom: 12 }]}>
-            Adjust how large text appears across the app
+            Adjust how Large Text Appears Across the App
           </Text>
           <ChipGroup
             options={TEXT_SIZE_OPTIONS}
@@ -173,7 +173,7 @@ export default function SettingsScreen() {
               { color: colors.textSub, fontSize, fontFamily, borderColor: colors.border },
             ]}
           >
-            Preview — The quick brown fox jumps over the lazy dog.
+            Preview — The Quick Brown Fox Jumps Over The Lazy Dog.
           </Text>
         </View>
 
@@ -182,7 +182,7 @@ export default function SettingsScreen() {
             Text Style
           </Text>
           <Text style={[styles.rowDesc, { color: colors.textSub, marginBottom: 12 }]}>
-            Choose the typeface used throughout the app
+            Choose the Typeface Used Throughout the App
           </Text>
           <ChipGroup
             options={TEXT_STYLE_OPTIONS}
@@ -197,7 +197,7 @@ export default function SettingsScreen() {
               { color: colors.textSub, fontSize, fontFamily, borderColor: colors.border },
             ]}
           >
-            Preview — The quick brown fox jumps over the lazy dog.
+            Preview — The Quick Brown Fox Jumps Over The Lazy Dog.
           </Text>
         </View>
 
