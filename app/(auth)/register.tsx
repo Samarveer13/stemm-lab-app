@@ -35,7 +35,7 @@ export default function RegisterScreen() {
       return;
     }
     if (password !== confirm) {
-      setError("Passwords do not Match!");
+      setError("Passwords Do Not Match!");
       return;
     }
     if (password.length < 6) {

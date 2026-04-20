@@ -34,6 +34,37 @@ export default function ProfileScreen() {
         >
           Student Profile
         </Text>
+
+        <View
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: 14,
+            padding: 16,
+            borderWidth: 1,
+            borderColor: "#E5E7EB",
+            marginBottom: 20,
+          }}
+        >
+          <Text style={{ fontSize: 18, fontWeight: "600", marginBottom: 8 }}>
+            Mahnoor
+          </Text>
+
+          <Text style={{ color: "#6B7280", marginBottom: 6 }}>
+            Year 8
+          </Text>
+
+          <Text style={{ color: "#6B7280", marginBottom: 6 }}>
+            Team: STEMM Explorers
+          </Text>
+
+          <Text style={{ color: "#6B7280", marginBottom: 6 }}>
+            Experiments Completed: 6
+          </Text>
+
+          <Text style={{ color: "#6B7280" }}>
+            Total Score: 120
+          </Text>
+        </View>
       </View>
     </ScreenContainer>
   );
