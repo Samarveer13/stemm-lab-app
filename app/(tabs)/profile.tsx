@@ -1,5 +1,6 @@
 import { Text, View } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
+import CustomButton from "../../src/components/CustomButton";
 
 export default function ProfileScreen() {
   return (
@@ -35,7 +36,6 @@ export default function ProfileScreen() {
           Student Profile
         </Text>
 
-        {/* PROFILE CARD */}
         <View
           style={{
             backgroundColor: "#FFFFFF",
@@ -67,7 +67,6 @@ export default function ProfileScreen() {
           </Text>
         </View>
 
-        {/* 🔥 NEW LEADERBOARD CARD */}
         <View
           style={{
             backgroundColor: "#FFFFFF",
@@ -104,6 +103,8 @@ export default function ProfileScreen() {
             Your Team: 2nd Place 🎉
           </Text>
         </View>
+
+        <CustomButton title="View Activities" />
       </View>
     </ScreenContainer>
   );
