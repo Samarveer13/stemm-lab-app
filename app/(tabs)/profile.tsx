@@ -1,9 +1,17 @@
-import { View, Text } from "react-native";
+import { Text, View } from "react-native";
+import ScreenContainer from "../../src/components/ScreenContainer";
 
 export default function ProfileScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Profile Screen</Text>
-    </View>
+    <ScreenContainer>
+      <View
+        style={{
+          flex: 1,
+          paddingHorizontal: 20,
+          paddingTop: 70,
+        }}
+      >
+      </View>
+    </ScreenContainer>
   );
 }
