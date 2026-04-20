@@ -1,8 +1,11 @@
 import { Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import CustomButton from "../../src/components/CustomButton";
 
 export default function ProfileScreen() {
+  const router = useRouter();
+
   return (
     <ScreenContainer>
       <View
@@ -108,7 +111,10 @@ export default function ProfileScreen() {
         </View>
 
         <View style={{ paddingBottom: 10 }}>
-          <CustomButton title="View Activities" />
+          <CustomButton
+            title="View Activities"
+            onPress={() => router.push("/(tabs)/activity-hub")}
+          />
         </View>
       </View>
     </ScreenContainer>
