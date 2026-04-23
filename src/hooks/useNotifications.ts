@@ -4,6 +4,7 @@ import {
   requestNotificationPermissions,
   getExpoPushToken,
   setupAndroidChannel,
+  scheduleLocalNotification,
 } from '../services/notificationService';
 
 export function useNotifications() {
@@ -22,6 +23,7 @@ export function useNotifications() {
       if (granted) {
         const t = await getExpoPushToken();
         setToken(t);
+        await scheduleLocalNotification('Welcome to STEMM Lab!', 'Great to have you back.', 3);
       }
     })();
 
