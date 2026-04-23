@@ -2,9 +2,11 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { AccessibilityProvider } from "../src/context/AccessibilityContext";
 import { AuthProvider, useAuth } from "../src/context/AuthContext";
+import { useNotifications } from "../src/hooks/useNotifications";
 
 function RootNavigator() {
   const { user, loading, teamReady } = useAuth();
+  useNotifications();
   const segments = useSegments();
   const router = useRouter();
 
