@@ -7,18 +7,17 @@
     "icon": "./assets/images/icon.png",
     "scheme": "tempapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.stemmlab.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -40,7 +39,16 @@
         }
       ],
       "expo-sqlite",
-      "expo-background-task"
+      "expo-background-task",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "sounds": []
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
