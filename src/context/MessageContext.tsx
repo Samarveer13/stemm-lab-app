@@ -16,7 +16,7 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
   const [message, setMessage] = useState<string | null>(null);
 
   function sendMessage(msg: string) {
-    console.log("Broadcast message:", msg);
+    console.log("Broadcast Message:", msg);
     setMessage(msg);
   }
 

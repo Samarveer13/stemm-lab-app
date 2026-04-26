@@ -2,6 +2,7 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { AccessibilityProvider } from "../src/context/AccessibilityContext";
 import { AuthProvider, useAuth } from "../src/context/AuthContext";
+import { MessageProvider } from "../src/context/MessageContext";
 import { registerStemmBackgroundTask } from "../src/services/backgroundTaskService";
 
 function RootNavigator() {
@@ -37,7 +38,9 @@ export default function RootLayout() {
   return (
     <AccessibilityProvider>
       <AuthProvider>
-        <RootNavigator />
+        <MessageProvider>
+          <RootNavigator />
+        </MessageProvider>
       </AuthProvider>
     </AccessibilityProvider>
   );
