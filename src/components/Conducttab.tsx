@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 // Install these:
-//   npx expo install expo-image-picker expo-location expo-media-library
+//  npx expo install expo-image-picker expo-location expo-media-library
 // import * as ImagePicker from "expo-image-picker";
 // import * as Location from "expo-location";
 

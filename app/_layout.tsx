@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { AccessibilityProvider } from "../src/context/AccessibilityContext";
 import { AuthProvider, useAuth } from "../src/context/AuthContext";
 import { MessageProvider } from "../src/context/MessageContext";
+import BroadcastBanner from "../src/components/BroadcastBanner";
 import { registerStemmBackgroundTask } from "../src/services/backgroundTaskService";
 
 function RootNavigator() {
@@ -31,7 +32,12 @@ function RootNavigator() {
     }
   }, [user, loading, teamReady, segments]);
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <>
+      <BroadcastBanner />
+      <Stack screenOptions={{ headerShown: false }} />
+    </>
+  );
 }
 
 export default function RootLayout() {
