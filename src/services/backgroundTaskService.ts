@@ -7,7 +7,7 @@ declare global {
 }
 
 const STEMM_BACKGROUND_TASK = "stemm-background-task";
-const TEN_MINUTES_MS = 600000;
+const TEN_MINUTES_MS = 60000;
 const TEN_MINUTES_SECONDS = 600;
 
 let simulatedInterval: ReturnType<typeof setInterval> | null = null;
