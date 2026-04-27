@@ -2,11 +2,18 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { AccessibilityProvider } from "../src/context/AccessibilityContext";
 import { AuthProvider, useAuth } from "../src/context/AuthContext";
+import { MessageProvider } from "../src/context/MessageContext";
+import BroadcastBanner from "../src/components/BroadcastBanner";
+import { registerStemmBackgroundTask } from "../src/services/backgroundTaskService";
 
 function RootNavigator() {
   const { user, loading, teamReady } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+
+  useEffect(() => {
+    registerStemmBackgroundTask();
+  }, []);
 
   useEffect(() => {
     if (loading) return;
@@ -17,25 +24,29 @@ function RootNavigator() {
     const inActivities = segments[0] === "activities";
 
     if (!user) {
-      // Not logged in → go to login
       if (!inAuthGroup) router.replace("/(auth)/login");
     } else if (!teamReady) {
-      // Logged in but team not set up yet
       if (!inTeamSetup) router.replace("/team-setup");
     } else {
-      // Fully authenticated + team ready
       if (!inTabs && !inActivities) router.replace("/(tabs)");
     }
   }, [user, loading, teamReady, segments]);
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <>
+      <BroadcastBanner />
+      <Stack screenOptions={{ headerShown: false }} />
+    </>
+  );
 }
 
 export default function RootLayout() {
   return (
     <AccessibilityProvider>
       <AuthProvider>
-        <RootNavigator />
+        <MessageProvider>
+          <RootNavigator />
+        </MessageProvider>
       </AuthProvider>
     </AccessibilityProvider>
   );
