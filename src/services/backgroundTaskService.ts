@@ -2,14 +2,22 @@ import { Platform } from "react-native";
 import * as BackgroundTask from "expo-background-task";
 import * as TaskManager from "expo-task-manager";
 
+declare global {
+  var STEMM_MESSAGE: string | null | undefined;
+}
+
 const STEMM_BACKGROUND_TASK = "stemm-background-task";
+const TEN_MINUTES_MS = 600000;
+const TEN_MINUTES_SECONDS = 600;
 
 let simulatedInterval: ReturnType<typeof setInterval> | null = null;
 
 if (Platform.OS === "android") {
   TaskManager.defineTask(STEMM_BACKGROUND_TASK, async () => {
     try {
-      console.log("STEMM real Background Task Running on Android");
+      globalThis.STEMM_MESSAGE = "Reminder: Complete your STEMM Activity!";
+      console.log("Broadcast Message Sent from Android Background Task");
+
       return BackgroundTask.BackgroundTaskResult.Success;
     } catch (error) {
       console.log("STEMM Background Task Failed", error);
@@ -22,8 +30,9 @@ function startSimulatedBackgroundTask(platformName: string) {
   if (simulatedInterval) return;
 
   simulatedInterval = setInterval(() => {
-    console.log(`STEMM Simulated Background Task Running On ${platformName}`);
-  }, 15000);
+    globalThis.STEMM_MESSAGE = "Reminder: Complete your STEMM Activity!";
+    console.log(`Broadcast Message Sent from Simulated Task on ${platformName}`);
+  }, TEN_MINUTES_MS);
 }
 
 export async function registerStemmBackgroundTask() {
@@ -43,7 +52,7 @@ export async function registerStemmBackgroundTask() {
 
   if (!isRegistered) {
     await BackgroundTask.registerTaskAsync(STEMM_BACKGROUND_TASK, {
-      minimumInterval: 15,
+      minimumInterval: TEN_MINUTES_SECONDS,
     });
   }
 }
@@ -68,7 +77,9 @@ export async function unregisterStemmBackgroundTask() {
 
 export async function getBackgroundTaskStatus() {
   if (Platform.OS === "web" || Platform.OS === "ios") {
-    return simulatedInterval ? "Simulated Background Task Running" : "Not Running";
+    return simulatedInterval
+      ? "Simulated Background Task Running"
+      : "Not Running";
   }
 
   const isRegistered = await TaskManager.isTaskRegisteredAsync(
