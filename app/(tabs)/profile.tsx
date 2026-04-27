@@ -8,7 +8,7 @@ import { useAccessibility } from "../../src/context/AccessibilityContext";
 export default function ProfileScreen() {
   const router = useRouter();
   const { studentName, teamName, yearLevel } = useAuth();
-  const { colors } = useAccessibility();
+  const { colors, fontSize, fontFamily } = useAccessibility();
 
   return (
     <ScreenContainer>
@@ -24,9 +24,10 @@ export default function ProfileScreen() {
           <Text
             style={{
               textAlign: "center",
-              fontSize: 18,
+              fontSize: fontSize + 4,
               color: colors.primary,
               fontWeight: "600",
+              fontFamily,
               marginBottom: 30,
             }}
           >
@@ -36,8 +37,9 @@ export default function ProfileScreen() {
           <Text
             style={{
               textAlign: "center",
-              fontSize: 22,
+              fontSize: fontSize + 8,
               fontWeight: "700",
+              fontFamily,
               marginBottom: 30,
               color: colors.textMain,
             }}
@@ -55,23 +57,23 @@ export default function ProfileScreen() {
               marginBottom: 20,
             }}
           >
-            <Text style={{ fontSize: 18, fontWeight: "600", marginBottom: 8, color: colors.textMain }}>
+            <Text style={{ fontSize: fontSize + 4, fontWeight: "600", fontFamily, marginBottom: 8, color: colors.textMain }}>
               {studentName || "Student"}
             </Text>
 
-            <Text style={{ color: colors.textSub, marginBottom: 6 }}>
+            <Text style={{ fontSize, fontFamily, color: colors.textSub, marginBottom: 6 }}>
               {yearLevel || "—"}
             </Text>
 
-            <Text style={{ color: colors.textSub, marginBottom: 6 }}>
+            <Text style={{ fontSize, fontFamily, color: colors.textSub, marginBottom: 6 }}>
               Team: {teamName || "—"}
             </Text>
 
-            <Text style={{ color: colors.textSub, marginBottom: 6 }}>
+            <Text style={{ fontSize, fontFamily, color: colors.textSub, marginBottom: 6 }}>
               Experiments Completed: 6
             </Text>
 
-            <Text style={{ color: colors.textSub }}>
+            <Text style={{ fontSize, fontFamily, color: colors.textSub }}>
               Total Score: 120
             </Text>
           </View>
@@ -86,25 +88,27 @@ export default function ProfileScreen() {
               marginBottom: 20,
             }}
           >
-            <Text style={{ fontWeight: "600", marginBottom: 10, color: colors.textMain }}>
+            <Text style={{ fontSize, fontWeight: "600", fontFamily, marginBottom: 10, color: colors.textMain }}>
               Leaderboard
             </Text>
 
-            <Text style={{ color: colors.textSub, marginBottom: 4 }}>
+            <Text style={{ fontSize, fontFamily, color: colors.textSub, marginBottom: 4 }}>
               1. Team Alpha — 150 pts
             </Text>
 
-            <Text style={{ color: colors.textSub, marginBottom: 4 }}>
+            <Text style={{ fontSize, fontFamily, color: colors.textSub, marginBottom: 4 }}>
               2. Team Beta — 120 pts
             </Text>
 
-            <Text style={{ color: colors.textSub }}>
+            <Text style={{ fontSize, fontFamily, color: colors.textSub }}>
               3. Team Charlie — 100 pts
             </Text>
 
             <Text
               style={{
                 marginTop: 10,
+                fontSize,
+                fontFamily,
                 color: colors.primary,
                 fontWeight: "600",
               }}
