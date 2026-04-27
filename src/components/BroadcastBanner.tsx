@@ -1,12 +1,22 @@
+import { useEffect } from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { useMessage } from "../context/MessageContext";
 
 export default function BroadcastBanner() {
-  const { message, clearMessage } = useMessage();
+  const { message, sendMessage, clearMessage } = useMessage();
 
-  if (!message) {
-    return null;
-  }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (globalThis.STEMM_MESSAGE) {
+        sendMessage(globalThis.STEMM_MESSAGE);
+        globalThis.STEMM_MESSAGE = null;
+      }
+    }, 600000); // set to 10 minutes, can change if testing needs to be done.
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!message) return null;
 
   return (
     <TouchableOpacity
