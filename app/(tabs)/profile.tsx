@@ -1,14 +1,22 @@
-import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import ScreenContainer from "../../src/components/ScreenContainer";
+import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
 import CustomButton from "../../src/components/CustomButton";
-import { useAuth } from "../../src/context/AuthContext";
+import ScreenContainer from "../../src/components/ScreenContainer";
 import { useAccessibility } from "../../src/context/AccessibilityContext";
+import { useAuth } from "../../src/context/AuthContext";
+import { getUserLocation } from "../../src/services/locationService";
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { studentName, teamName, yearLevel } = useAuth();
   const { colors, fontSize, fontFamily } = useAccessibility();
+
+  const [location, setLocation] = useState<any>(null);
+
+  useEffect(() => {
+    getUserLocation().then(setLocation);
+  }, []);
 
   return (
     <ScreenContainer>
@@ -73,8 +81,16 @@ export default function ProfileScreen() {
               Experiments Completed: 6
             </Text>
 
-            <Text style={{ fontSize, fontFamily, color: colors.textSub }}>
+            <Text style={{ fontSize, fontFamily, color: colors.textSub, marginBottom: 6 }}>
               Total Score: 120
+            </Text>
+
+            {}
+            <Text style={{ fontSize, fontFamily, color: colors.textSub }}>
+              Location:{" "}
+              {location
+                ? `${location.latitude.toFixed(3)}, ${location.longitude.toFixed(3)}`
+                : "Fetching..."}
             </Text>
           </View>
 
