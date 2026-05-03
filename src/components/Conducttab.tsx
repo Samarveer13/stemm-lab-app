@@ -26,7 +26,8 @@ export type ConductTabProps = {
   activityTitle: string;
   videoSlots: VideoSlot[];           // Define per activity how many/what videos needed
   sensorSummary?: Record<string, string>; // Auto-populated from sensor tab, e.g. {BPM: "18", Peak dB: "72"}
-  onSubmit?: (data: SubmitPayload) => void;
+  onSubmit?: (data: SubmitPayload) => void | Promise<void>;
+  showSubmit?: boolean;
 };
 
 export type SubmitPayload = {
@@ -169,6 +170,7 @@ export default function ConductTab({
   videoSlots: initialSlots,
   sensorSummary = {},
   onSubmit,
+  showSubmit = true,
 }: ConductTabProps) {
   const [slots, setSlots] = useState<VideoSlot[]>(initialSlots);
   const [gps, setGps] = useState<SubmitPayload["gps"]>(null);
@@ -319,79 +321,83 @@ export default function ConductTab({
         </Card>
       )}
 
-      {/* ── Rating ── */}
-      <Card>
-        <Title>⭐ Rate This Activity</Title>
-        <Text style={{ fontSize: 13, color: "#9CA3AF", marginBottom: 6 }}>
-          How would you rate this experiment?
-        </Text>
-        <StarRating rating={rating} onRate={setRating} />
-        {rating > 0 && (
-          <Text style={{ fontSize: 13, color: "#6B7280", marginTop: 8 }}>
-            {["", "Not for me", "It was okay", "Pretty good!", "Really enjoyed it", "Absolutely loved it! 🏆"][rating]}
-          </Text>
-        )}
-      </Card>
+      {showSubmit && (
+        <>
+          {/* ── Rating ── */}
+          <Card>
+            <Title>⭐ Rate This Activity</Title>
+            <Text style={{ fontSize: 13, color: "#9CA3AF", marginBottom: 6 }}>
+              How would you rate this experiment?
+            </Text>
+            <StarRating rating={rating} onRate={setRating} />
+            {rating > 0 && (
+              <Text style={{ fontSize: 13, color: "#6B7280", marginTop: 8 }}>
+                {["", "Not for me", "It was okay", "Pretty good!", "Really enjoyed it", "Absolutely loved it! 🏆"][rating]}
+              </Text>
+            )}
+          </Card>
 
-      {/* ── Team Reflection ── */}
-      <Card>
-        <Title>💬 Team Reflection</Title>
-        <Text style={{ fontSize: 13, color: "#9CA3AF", marginBottom: 10 }}>
-          What did your team observe, learn, or find surprising?
-        </Text>
-        <TextInput
-          value={reflection}
-          onChangeText={setReflection}
-          placeholder="e.g. We were surprised that the bigger parachute wasn't always the slowest. We think the shape mattered more than the size…"
-          placeholderTextColor="#D1D5DB"
-          multiline
-          numberOfLines={5}
-          style={{
-            borderWidth: 1.5,
-            borderColor: reflection.length > 10 ? "#10B981" : "#E5E7EB",
-            borderRadius: 10,
-            paddingVertical: 10,
-            paddingHorizontal: 12,
-            fontSize: 14,
-            color: "#111827",
-            backgroundColor: "#FAFAFA",
-            textAlignVertical: "top",
-            minHeight: 100,
-          }}
-        />
-        <Text style={{ fontSize: 12, color: reflection.length > 10 ? "#10B981" : "#9CA3AF", marginTop: 5, textAlign: "right" }}>
-          {reflection.length} characters {reflection.length < 10 ? `(need ${10 - reflection.length} more)` : "✓"}
-        </Text>
-      </Card>
+          {/* ── Team Reflection ── */}
+          <Card>
+            <Title>💬 Team Reflection</Title>
+            <Text style={{ fontSize: 13, color: "#9CA3AF", marginBottom: 10 }}>
+              What did your team observe, learn, or find surprising?
+            </Text>
+            <TextInput
+              value={reflection}
+              onChangeText={setReflection}
+              placeholder="e.g. We were surprised that the bigger parachute wasn't always the slowest. We think the shape mattered more than the size…"
+              placeholderTextColor="#D1D5DB"
+              multiline
+              numberOfLines={5}
+              style={{
+                borderWidth: 1.5,
+                borderColor: reflection.length > 10 ? "#10B981" : "#E5E7EB",
+                borderRadius: 10,
+                paddingVertical: 10,
+                paddingHorizontal: 12,
+                fontSize: 14,
+                color: "#111827",
+                backgroundColor: "#FAFAFA",
+                textAlignVertical: "top",
+                minHeight: 100,
+              }}
+            />
+            <Text style={{ fontSize: 12, color: reflection.length > 10 ? "#10B981" : "#9CA3AF", marginTop: 5, textAlign: "right" }}>
+              {reflection.length} characters {reflection.length < 10 ? `(need ${10 - reflection.length} more)` : "✓"}
+            </Text>
+          </Card>
 
-      {/* ── Submit Button ── */}
-      <TouchableOpacity
-        onPress={handleSubmit}
-        disabled={!canSubmit || submitting}
-        style={{
-          backgroundColor: canSubmit ? "#3B82F6" : "#BFDBFE",
-          borderRadius: 14,
-          paddingVertical: 16,
-          alignItems: "center",
-          marginBottom: 8,
-        }}
-      >
-        {submitting ? (
-          <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-            <ActivityIndicator color="#fff" size="small" />
-            <Text style={{ color: "#fff", fontWeight: "600", fontSize: 16 }}>Uploading…</Text>
-          </View>
-        ) : (
-          <Text style={{ color: "#fff", fontWeight: "700", fontSize: 16 }}>
-            {canSubmit ? "🚀 Submit Experiment" : "Complete rating & reflection to submit"}
-          </Text>
-        )}
-      </TouchableOpacity>
+          {/* ── Submit Button ── */}
+          <TouchableOpacity
+            onPress={handleSubmit}
+            disabled={!canSubmit || submitting}
+            style={{
+              backgroundColor: canSubmit ? "#3B82F6" : "#BFDBFE",
+              borderRadius: 14,
+              paddingVertical: 16,
+              alignItems: "center",
+              marginBottom: 8,
+            }}
+          >
+            {submitting ? (
+              <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                <ActivityIndicator color="#fff" size="small" />
+                <Text style={{ color: "#fff", fontWeight: "600", fontSize: 16 }}>Uploading…</Text>
+              </View>
+            ) : (
+              <Text style={{ color: "#fff", fontWeight: "700", fontSize: 16 }}>
+                {canSubmit ? "🚀 Submit Experiment" : "Complete rating & reflection to submit"}
+              </Text>
+            )}
+          </TouchableOpacity>
 
-      {videosComplete < slots.length && (
-        <Text style={{ fontSize: 12, color: "#9CA3AF", textAlign: "center", marginBottom: 16 }}>
-          💡 Tip: You can submit without all videos, but try to include at least one!
-        </Text>
+          {videosComplete < slots.length && (
+            <Text style={{ fontSize: 12, color: "#9CA3AF", textAlign: "center", marginBottom: 16 }}>
+              💡 Tip: You can submit without all videos, but try to include at least one!
+            </Text>
+          )}
+        </>
       )}
     </View>
   );
