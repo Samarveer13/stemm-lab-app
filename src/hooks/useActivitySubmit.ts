@@ -1,5 +1,6 @@
 import { useAuth } from "../context/AuthContext";
-import { saveActivityResult } from "../services/firestoreService";
+import { insertResult } from "../database/resultRepository";
+import { syncPendingResults } from "../services/syncService";
 import type { SubmitPayload } from "../components/Conducttab";
 
 export function useActivitySubmit(activityId: string, activityName: string) {
@@ -14,6 +15,17 @@ export function useActivitySubmit(activityId: string, activityName: string) {
       (payload.gps ? 10 : 0) +
       payload.rating * 5;
 
-    await saveActivityResult({ uid: user.uid, teamId, activityId, activityName, score });
+    // Write to SQLite immediately — survives network failure or app crash
+    await insertResult({
+      uid: user.uid,
+      teamId,
+      activityId,
+      activityName,
+      score,
+      completedAt: new Date().toISOString(),
+    });
+
+    // Sync to Firestore in the background — never blocks the UI
+    syncPendingResults().catch(() => {});
   };
 }
