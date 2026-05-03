@@ -152,3 +152,38 @@ export async function saveActivityResult(
     experimentsCompleted: increment(1),
   });
 }
+
+// Used by syncService — returns the new Firestore doc ID
+export async function syncActivityResult(
+  result: Omit<ActivityResult, "completedAt">
+): Promise<string> {
+  const ref = await addDoc(collection(db, "activityResults"), {
+    ...result,
+    completedAt: serverTimestamp(),
+  });
+  await updateDoc(doc(db, "teams", result.teamId), {
+    totalScore: increment(result.score),
+    experimentsCompleted: increment(1),
+  });
+  return ref.id;
+}
+
+// ── Leaderboard with SQLite cache ─────────────────────────────────────────────
+
+export async function getLeaderboardWithCache(limitCount = 10): Promise<LeaderboardEntry[]> {
+  const { getCachedLeaderboard, upsertLeaderboard } = await import(
+    "../database/teamRepository"
+  );
+
+  const cached = await getCachedLeaderboard();
+  if (cached && !cached.stale) return cached.entries;
+
+  try {
+    const entries = await getLeaderboard(limitCount);
+    await upsertLeaderboard(entries);
+    return entries;
+  } catch {
+    // Offline — serve stale cache rather than nothing
+    return cached?.entries ?? [];
+  }
+}
