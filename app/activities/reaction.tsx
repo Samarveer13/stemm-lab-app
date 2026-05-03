@@ -11,6 +11,7 @@ import {
   View
 } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
+import ActivitySubmitCard from "../../src/components/ActivitySubmitCard";
 
 const TAB_LABELS = ["Overview", "Phase 1", "Phase 2", "Phase 3", "Results", "Science"];
 
@@ -237,7 +238,7 @@ export default function ReactionScreen() {
         ))}
       </ScrollView>
 
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 
         {activeTab === 0 && (
           <View>
@@ -313,6 +314,7 @@ export default function ReactionScreen() {
                 </View>
               ))}
             </Card>
+            <ActivitySubmitCard activityId="reaction" activityName="Reaction Board Challenge" />
           </View>
         )}
 

@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ConductTab from "../../src/components/Conducttab";
 import ScreenContainer from "../../src/components/ScreenContainer";
+import ActivitySubmitCard from "../../src/components/ActivitySubmitCard";
 
 
 type TrialRow = { label: string; prediction: string; time: string; correct: string; stopTime: string };
@@ -40,7 +41,7 @@ export default function ParachuteScreen() {
     <ScreenContainer>
       <Header onBack={() => router.back()} title="🪂 Parachute Drop Challenge" subtitle="Engineering + Physics" />
       <TabBar tabs={TAB_LABELS} active={activeTab} onPress={setActiveTab} />
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 
         {activeTab === 0 && <View>
           <Card><CTitle>Overview</CTitle><Body>Students design, build, and test a parachute for a small toy to reduce landing speed. Teams iterate designs under time and material constraints.</Body></Card>
@@ -75,7 +76,8 @@ export default function ParachuteScreen() {
               { id: "proto3",   label: "Drop 3 – Improved design",         hint: "Use ruler in frame for scale." },
             ]}
             sensorSummary={sensorSummary}
-            onSubmit={data => console.log("Parachute submitted:", data)}
+            onSubmit={undefined}
+            showSubmit={false}
           />
         )}
 
@@ -103,9 +105,10 @@ export default function ParachuteScreen() {
               ))}
             </View>}
           </Card>
+          <ActivitySubmitCard activityId="parachute" activityName="Parachute Drop Challenge" />
         </View>}
 
-        
+
         {activeTab === 4 && <View>
           <Card><CTitle>How Parachutes Work</CTitle><Body>Gravity pulls downward. A parachute increases air resistance (drag) acting upward, slowing the fall and reducing impact force. Engineers improve designs through repeated testing.</Body></Card>
           <Card><CTitle>Key Formulas</CTitle>
