@@ -7,6 +7,13 @@ import {
   saveUserProfile,
   createTeam,
 } from "../services/firestoreService";
+import {
+  upsertUserProfile,
+  getUserProfileFromCache,
+  clearUserProfile,
+} from "../database/userRepository";
+import { upsertTeam } from "../database/teamRepository";
+import { syncPendingResults } from "../services/syncService";
 
 interface AuthState {
   user: User | null;
@@ -53,16 +60,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
+
       if (firebaseUser) {
-        const profile = await getUserProfile(firebaseUser.uid);
-        if (profile) {
-          setTeamName(profile.teamName);
-          setTeamCode(profile.teamCode);
-          setTeamId(profile.teamId);
-          setYearLevel(profile.yearLevel ?? "");
-          setMemberNames(profile.memberNames);
-          setTeamReady(true);
+        let resolved = false;
+
+        // Primary: fetch from Firestore and cache locally
+        try {
+          const profile = await getUserProfile(firebaseUser.uid);
+          if (profile) {
+            await upsertUserProfile({
+              uid: firebaseUser.uid,
+              memberNames: profile.memberNames,
+              teamId: profile.teamId,
+              teamName: profile.teamName,
+              teamCode: profile.teamCode,
+              yearLevel: profile.yearLevel ?? "",
+              email: profile.email,
+              isAnonymous: profile.isAnonymous,
+              createdAt: profile.createdAt?.toDate?.()?.toISOString() ?? null,
+              updatedAt: new Date().toISOString(),
+            });
+            setTeamName(profile.teamName);
+            setTeamCode(profile.teamCode);
+            setTeamId(profile.teamId);
+            setYearLevel(profile.yearLevel ?? "");
+            setMemberNames(profile.memberNames);
+            setTeamReady(true);
+            resolved = true;
+          }
+        } catch {
+          // Firestore unreachable — fall through to SQLite cache
         }
+
+        // Fallback: read from SQLite cache when offline
+        if (!resolved) {
+          const cached = await getUserProfileFromCache(firebaseUser.uid);
+          if (cached && cached.teamId) {
+            setTeamName(cached.teamName);
+            setTeamCode(cached.teamCode);
+            setTeamId(cached.teamId);
+            setYearLevel(cached.yearLevel);
+            setMemberNames(cached.memberNames);
+            setTeamReady(true);
+          }
+        }
+
+        // Retry any activity results that failed to sync previously
+        syncPendingResults().catch(() => {});
       } else {
         setTeamReady(false);
         setTeamId("");
@@ -71,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setYearLevel("");
         setMemberNames([]);
       }
+
       setLoading(false);
     });
     return unsubscribe;
@@ -109,6 +154,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       yearLevel: year,
       email: user.email,
       isAnonymous: user.isAnonymous,
+    });
+
+    // Cache user profile and team locally
+    const now = new Date().toISOString();
+    await upsertUserProfile({
+      uid: user.uid,
+      memberNames: members,
+      teamId: newTeamId,
+      teamName: team,
+      teamCode: newTeamCode,
+      yearLevel: year,
+      email: user.email,
+      isAnonymous: user.isAnonymous,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    await upsertTeam({
+      id: newTeamId,
+      teamName: team,
+      teamCode: newTeamCode,
+      memberNames: members,
+      memberUids: [user.uid],
+      totalScore: 0,
+      experimentsCompleted: 0,
+      createdAt: now,
+      createdBy: user.uid,
     });
 
     setTeamName(team);
