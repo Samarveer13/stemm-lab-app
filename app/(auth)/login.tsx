@@ -17,15 +17,27 @@ import { useAccessibility } from "../../src/context/AccessibilityContext";
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, loginAsGuest } = useAuth();
   const { colors, fontSize, fontFamily } = useAccessibility();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [guestLoading, setGuestLoading] = useState(false);
 
   const t = (size: number) => ({ fontSize: size + (fontSize - 14), fontFamily });
+
+  async function handleGuest() {
+    setGuestLoading(true);
+    try {
+      await loginAsGuest();
+    } catch (e: any) {
+      setError("Could not continue as guest. Please try again.");
+    } finally {
+      setGuestLoading(false);
+    }
+  }
 
   async function handleLogin() {
     setError("");
@@ -121,6 +133,28 @@ export default function LoginScreen() {
             )}
           </TouchableOpacity>
 
+          <View style={styles.dividerRow}>
+            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+            <Text style={[styles.dividerText, { color: colors.textSub, ...t(12) }]}>or</Text>
+            <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+          </View>
+
+          <TouchableOpacity
+            style={[styles.guestButton, { borderColor: colors.border, opacity: guestLoading ? 0.7 : 1 }]}
+            onPress={handleGuest}
+            disabled={guestLoading || loading}
+            accessibilityRole="button"
+            accessibilityLabel="Continue as guest"
+          >
+            {guestLoading ? (
+              <ActivityIndicator color={colors.textSub} />
+            ) : (
+              <Text style={[styles.guestButtonText, { color: colors.textSub, ...t(15) }]}>
+                Continue as Guest
+              </Text>
+            )}
+          </TouchableOpacity>
+
           <View style={styles.footer}>
             <Text style={[styles.footerText, { color: colors.textSub, ...t(14) }]}>
               Don't Have An Account?{" "}
@@ -198,6 +232,28 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFFFFF",
     fontWeight: "600",
+  },
+  dividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+  },
+  dividerText: {
+    marginHorizontal: 12,
+  },
+  guestButton: {
+    borderWidth: 1.5,
+    borderRadius: 12,
+    paddingVertical: 15,
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  guestButtonText: {
+    fontWeight: "500",
   },
   footer: {
     flexDirection: "row",
