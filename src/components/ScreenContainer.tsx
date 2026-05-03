@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View } from "react-native";
 import { useAccessibility } from "../context/AccessibilityContext";
 
 type Props = {
@@ -12,7 +12,13 @@ export default function ScreenContainer({ children }: Props) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
-      <View style={{ flex: 1, backgroundColor: colors.bg }}>{children}</View>
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: colors.bg }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+      >
+        {children}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
