@@ -5,7 +5,7 @@ import ScreenContainer from "../../src/components/ScreenContainer";
 import CustomButton from "../../src/components/CustomButton";
 import { useAuth } from "../../src/context/AuthContext";
 import { useAccessibility } from "../../src/context/AccessibilityContext";
-import { getLeaderboard, LeaderboardEntry } from "../../src/services/firestoreService";
+import { getLeaderboardWithCache, LeaderboardEntry } from "../../src/services/firestoreService";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function ProfileScreen() {
   const t = (size: number) => ({ fontSize: size + (fontSize - 14), fontFamily });
 
   useEffect(() => {
-    getLeaderboard(10)
+    getLeaderboardWithCache(10)
       .then(setLeaderboard)
       .catch(() => setLeaderboard([]))
       .finally(() => setLbLoading(false));
