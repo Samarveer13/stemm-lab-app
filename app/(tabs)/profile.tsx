@@ -1,14 +1,28 @@
-import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import ScreenContainer from "../../src/components/ScreenContainer";
+import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
 import CustomButton from "../../src/components/CustomButton";
-import { useAuth } from "../../src/context/AuthContext";
+import ScreenContainer from "../../src/components/ScreenContainer";
 import { useAccessibility } from "../../src/context/AccessibilityContext";
+import { useAuth } from "../../src/context/AuthContext";
+import { getBatteryLevel, isCharging } from "../../src/services/batteryService";
+import { getUserLocation } from "../../src/services/locationService";
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { studentName, teamName, yearLevel } = useAuth();
   const { colors, fontSize, fontFamily } = useAccessibility();
+
+  const [location, setLocation] = useState<any>(null);
+  const [battery, setBattery] = useState<number | null>(null);
+  const [charging, setCharging] = useState(false);
+
+  useEffect(() => {
+    getUserLocation().then(setLocation);
+
+    getBatteryLevel().then(setBattery);
+    isCharging().then(setCharging);
+  }, []);
 
   return (
     <ScreenContainer>
@@ -57,7 +71,15 @@ export default function ProfileScreen() {
               marginBottom: 20,
             }}
           >
-            <Text style={{ fontSize: fontSize + 4, fontWeight: "600", fontFamily, marginBottom: 8, color: colors.textMain }}>
+            <Text
+              style={{
+                fontSize: fontSize + 4,
+                fontWeight: "600",
+                fontFamily,
+                marginBottom: 8,
+                color: colors.textMain,
+              }}
+            >
               {studentName || "Student"}
             </Text>
 
@@ -73,8 +95,23 @@ export default function ProfileScreen() {
               Experiments Completed: 6
             </Text>
 
-            <Text style={{ fontSize, fontFamily, color: colors.textSub }}>
+            <Text style={{ fontSize, fontFamily, color: colors.textSub, marginBottom: 6 }}>
               Total Score: 120
+            </Text>
+
+            <Text style={{ fontSize, fontFamily, color: colors.textSub, marginBottom: 6 }}>
+              Location:{" "}
+              {location
+                ? `${location.latitude.toFixed(3)}, ${location.longitude.toFixed(3)}`
+                : "Fetching..."}
+            </Text>
+
+            <Text style={{ fontSize, fontFamily, color: colors.textSub, marginBottom: 6 }}>
+              Battery: {battery !== null ? `${battery}%` : "Loading..."}
+            </Text>
+
+            <Text style={{ fontSize, fontFamily, color: colors.textSub }}>
+              Charging: {charging ? "Yes" : "No"}
             </Text>
           </View>
 
@@ -88,7 +125,15 @@ export default function ProfileScreen() {
               marginBottom: 20,
             }}
           >
-            <Text style={{ fontSize, fontWeight: "600", fontFamily, marginBottom: 10, color: colors.textMain }}>
+            <Text
+              style={{
+                fontSize,
+                fontWeight: "600",
+                fontFamily,
+                marginBottom: 10,
+                color: colors.textMain,
+              }}
+            >
               Leaderboard
             </Text>
 
