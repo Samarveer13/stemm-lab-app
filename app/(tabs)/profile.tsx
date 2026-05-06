@@ -1,10 +1,12 @@
 import { Text, View, ScrollView, ActivityIndicator } from "react-native";
-import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import ScreenContainer from "../../src/components/ScreenContainer";
+import { useEffect, useState } from "react";
 import CustomButton from "../../src/components/CustomButton";
-import { useAuth } from "../../src/context/AuthContext";
+import ScreenContainer from "../../src/components/ScreenContainer";
 import { useAccessibility } from "../../src/context/AccessibilityContext";
+import { useAuth } from "../../src/context/AuthContext";
+import { getBatteryLevel, isCharging } from "../../src/services/batteryService";
+import { getUserLocation } from "../../src/services/locationService";
 import { getLeaderboardWithCache, LeaderboardEntry } from "../../src/services/firestoreService";
 
 export default function ProfileScreen() {
@@ -14,6 +16,9 @@ export default function ProfileScreen() {
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [lbLoading, setLbLoading] = useState(true);
+  const [location, setLocation] = useState<any>(null);
+  const [battery, setBattery] = useState<number | null>(null);
+  const [charging, setCharging] = useState(false);
 
   const t = (size: number) => ({ fontSize: size + (fontSize - 14), fontFamily });
 
@@ -22,6 +27,10 @@ export default function ProfileScreen() {
       .then(setLeaderboard)
       .catch(() => setLeaderboard([]))
       .finally(() => setLbLoading(false));
+
+    getUserLocation().then(setLocation);
+    getBatteryLevel().then(setBattery);
+    isCharging().then(setCharging);
   }, []);
 
   const myRank = leaderboard.findIndex((e) => e.id === teamId);
@@ -46,6 +55,7 @@ export default function ProfileScreen() {
           <Text style={{ ...t(fontSize + 4), fontWeight: "700", color: colors.textMain, marginBottom: 4 }}>
             {teamName || "—"}
           </Text>
+
           {!!teamCode && (
             <Text style={{ ...t(fontSize - 1), color: colors.textSub, marginBottom: 12 }}>
               Team Code: {teamCode}
@@ -75,6 +85,21 @@ export default function ProfileScreen() {
               </Text>
             </View>
           )}
+
+          <View style={{ marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border }}>
+            <Text style={{ ...t(fontSize - 1), color: colors.textSub, marginBottom: 4 }}>
+              Location:{" "}
+              {location
+                ? `${location.latitude.toFixed(3)}, ${location.longitude.toFixed(3)}`
+                : "Fetching..."}
+            </Text>
+            <Text style={{ ...t(fontSize - 1), color: colors.textSub, marginBottom: 4 }}>
+              Battery: {battery !== null ? `${battery}%` : "Loading..."}
+            </Text>
+            <Text style={{ ...t(fontSize - 1), color: colors.textSub }}>
+              Charging: {charging ? "Yes" : "No"}
+            </Text>
+          </View>
         </View>
 
         {/* Leaderboard card */}
