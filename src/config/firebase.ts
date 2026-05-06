@@ -1,15 +1,16 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
-// Replace these values with your Firebase project credentials
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyAquzxtRSPG8e6GToPqOHbYbPMKu_Ff20A",
+  authDomain: "stemm-lab-app-aeb91.firebaseapp.com",
+  projectId: "stemm-lab-app-aeb91",
+  storageBucket: "stemm-lab-app-aeb91.firebasestorage.app",
+  messagingSenderId: "1088798418289",
+  appId: "1:1088798418289:web:c9caa3bdc6eef75161c2d0",
 };
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+export const db = getFirestore(app);

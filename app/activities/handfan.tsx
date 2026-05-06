@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ConductTab from "../../src/components/Conducttab";
 import ScreenContainer from "../../src/components/ScreenContainer";
+import ActivitySubmitCard from "../../src/components/ActivitySubmitCard";
 
 const TAB_LABELS = ["Overview", "Instructions", "Conduct", "Result", "Science"];
 const MATERIALS = [
@@ -44,7 +45,7 @@ export default function HandFanScreen() {
     <ScreenContainer>
       <Header onBack={() => router.back()} title="🌬 Hand Fan Challenge" subtitle="Physics – Air Movement" />
       <TabBar tabs={TAB_LABELS} active={activeTab} onPress={setActiveTab} />
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 
         {activeTab === 0 && <View>
           <Card><CTitle>Overview</CTitle><Body>Students test how air movement affects flexible materials by fanning paper and cardboard at different distances. Record how far each material bends.</Body></Card>
@@ -81,7 +82,8 @@ export default function HandFanScreen() {
               { id: "cardboard", label: "Cardboard comparison video", hint: "Same test with cardboard to compare stiffness." },
             ]}
             sensorSummary={sensorSummary}
-            onSubmit={data => console.log("HandFan submitted:", data)}
+            onSubmit={undefined}
+            showSubmit={false}
           />
         )}
 
@@ -109,9 +111,10 @@ export default function HandFanScreen() {
             <TouchableOpacity onPress={calcForce} style={{backgroundColor:"#3B82F6",borderRadius:10,paddingVertical:12,alignItems:"center",marginTop:4}}><Text style={{color:"#fff",fontWeight:"600"}}>Calculate Force</Text></TouchableOpacity>
             {forceResult&&<View style={{backgroundColor:"#EFF6FF",borderRadius:10,padding:12,marginTop:10}}><Text style={{fontSize:14,color:"#1D4ED8",fontWeight:"600"}}>{forceResult}</Text></View>}
           </Card>
+          <ActivitySubmitCard activityId="handfan" activityName="Hand Fan Challenge" />
         </View>}
 
-        
+
         {activeTab === 4 && <View>
           <Card><CTitle>How Air Force Works</CTitle><Body>Moving air applies force to objects. Paper bends due to flexibility. F ≈ k × θ relates force to material stiffness (k) and bend angle (θ in radians). Repeated bending weakens the material.</Body></Card>
           <Card><CTitle>Stiffness Reference</CTitle>

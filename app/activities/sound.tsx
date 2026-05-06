@@ -13,6 +13,7 @@ import {
   View
 } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
+import ActivitySubmitCard from "../../src/components/ActivitySubmitCard";
 
 // NOTE: For real dB measurement install expo-av:
 //   npx expo install expo-av
@@ -132,7 +133,7 @@ export default function SoundScreen() {
         ))}
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 
         {/* ── OVERVIEW ── */}
         {activeTab === 0 && (
@@ -270,6 +271,7 @@ export default function SoundScreen() {
                 </View>
               ))}
             </Card>
+            <ActivitySubmitCard activityId="sound" activityName="Sound Pollution Hunter" />
           </View>
         )}
 

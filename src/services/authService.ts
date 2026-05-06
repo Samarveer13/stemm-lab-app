@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInAnonymously,
   signOut,
   updateProfile,
 } from "firebase/auth";
@@ -14,6 +15,11 @@ export async function registerUser(email: string, password: string, name: string
 
 export async function loginUser(email: string, password: string) {
   const cred = await signInWithEmailAndPassword(auth, email, password);
+  return cred.user;
+}
+
+export async function loginAnonymously() {
+  const cred = await signInAnonymously(auth);
   return cred.user;
 }
 
