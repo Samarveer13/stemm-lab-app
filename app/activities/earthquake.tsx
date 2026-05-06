@@ -13,7 +13,7 @@ import {
 import ScreenContainer from "../../src/components/ScreenContainer";
 
 // Install: npx expo install expo-sensors
-// import { Accelerometer } from "expo-sensors";
+import { Accelerometer, Gyroscope } from "expo-sensors";
 
 const TAB_LABELS = ["Overview", "Instructions", "Sensor", "Results", "Science"];
 
@@ -34,7 +34,8 @@ export default function EarthquakeScreen() {
   const [vibrationMag, setVibrationMag] = useState(0);
   const [peakVibration, setPeakVibration] = useState(0);
   const [history, setHistory] = useState<number[]>([]);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [gyro, setGyro] = useState({ x: 0, y: 0, z: 0 });
+  const intervalRef = useRef<any>(null);
 
   // Results
   const [designs, setDesigns] = useState<DesignRow[]>([
@@ -48,28 +49,40 @@ export default function EarthquakeScreen() {
   }, []);
 
   const startSensor = () => {
-    setIsActive(true);
-    setPeakVibration(0);
-    setHistory([]);
+  setIsActive(true);
+  setPeakVibration(0);
+  setHistory([]);
 
-    // Simulated accelerometer — replace with:
-    // const sub = Accelerometer.addListener(({ x, y, z }) => {
-    //   const mag = Math.sqrt(x*x + y*y + z*z);
-    //   const movement = Math.abs(mag - 1.0);  // subtract gravity baseline
-    //   ...
-    // });
-    intervalRef.current = setInterval(() => {
-      const sim = parseFloat((Math.random() * 0.8).toFixed(3));
-      setVibrationMag(sim);
-      setPeakVibration((prev) => Math.max(prev, sim));
-      setHistory((prev) => [...prev.slice(-30), sim]);
-    }, 200);
-  };
+  Accelerometer.setUpdateInterval(200);
+  Gyroscope.setUpdateInterval(200);
+
+  const accelSub = Accelerometer.addListener(({ x, y, z }) => {
+    const mag = Math.sqrt(x * x + y * y + z * z);
+    const movement = Math.abs(mag - 1.0);
+
+    setVibrationMag(movement);
+    setPeakVibration((prev) => Math.max(prev, movement));
+    setHistory((prev) => [...prev.slice(-30), movement]);
+  });
+
+  const gyroSub = Gyroscope.addListener(({ x, y, z }) => {
+    setGyro({ x, y, z });
+  });
+
+  intervalRef.current = {
+    accelSub,
+    gyroSub,
+  } as any;
+};
 
   const stopSensor = () => {
-    setIsActive(false);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
+  setIsActive(false);
+
+  if (intervalRef.current) {
+    (intervalRef.current as any).accelSub?.remove();
+    (intervalRef.current as any).gyroSub?.remove();
+  }
+};
 
   const getMagColor = (v: number) => {
     if (v < 0.1) return "#10B981";
@@ -189,6 +202,24 @@ export default function EarthquakeScreen() {
                 </View>
                 <Text style={{ fontSize: 11, color: "#9CA3AF", marginTop: 4 }}>Live vibration waveform</Text>
               </View>
+              <View
+  style={{
+    marginTop: 16,
+    backgroundColor: "#F9FAFB",
+    borderRadius: 10,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  }}
+>
+  <Text style={{ fontWeight: "600", marginBottom: 6 }}>
+    Gyroscope Rotation
+  </Text>
+
+  <Text>X Rotation: {gyro.x.toFixed(3)}</Text>
+  <Text>Y Rotation: {gyro.y.toFixed(3)}</Text>
+  <Text>Z Rotation: {gyro.z.toFixed(3)}</Text>
+</View>
 
               {/* Vibration rating */}
               <View style={{
