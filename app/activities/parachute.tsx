@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ConductTab from "../../src/components/Conducttab";
 import ScreenContainer from "../../src/components/ScreenContainer";
+import { requestCameraAccess } from "../../src/services/cameraService";
 
 
 type TrialRow = { label: string; prediction: string; time: string; correct: string; stopTime: string };
@@ -22,6 +23,7 @@ export default function ParachuteScreen() {
   ]);
   const [dropHeight, setDropHeight] = useState(""); const [fallTime, setFallTime] = useState(""); const [mass, setMass] = useState(""); const [contactTime, setContactTime] = useState("");
   const [calc, setCalc] = useState<{ vFinal: number; accel: number; netForce: number; weight: number; drag: number; gForce: number | null } | null>(null);
+  const [cameraStatus, setCameraStatus] = useState("Camera not checked");
 
   const updateTrial = (i: number, f: keyof TrialRow, v: string) => { const u = [...trials]; u[i] = { ...u[i], [f]: v }; setTrials(u); };
 
@@ -31,6 +33,16 @@ export default function ParachuteScreen() {
     const vFinal = h / t, accel = vFinal / t, netForce = m * accel, weight = m * 9.8, drag = weight - netForce;
     setCalc({ vFinal, accel, netForce, weight, drag, gForce: tc ? (vFinal / tc) / 9.8 : null });
   };
+
+  const checkCamera = async () => {
+  const allowed = await requestCameraAccess();
+
+  if (allowed) {
+    setCameraStatus("✅ Camera ready for recording");
+  } else {
+    setCameraStatus("❌ Camera permission denied");
+  }
+};
 
   const sensorSummary: Record<string, string> = {};
   trials.forEach((t, i) => { if (t.time) sensorSummary[`Action ${i + 1} fall time`] = `${t.time}s`; });
@@ -66,18 +78,55 @@ export default function ParachuteScreen() {
           <Card><CTitle>📹 Video Tips</CTitle>{["Slow-motion video preferred for impact analysis.","Place ruler in frame for scale.","Record each prototype separately."].map(t=><Bullet key={t} text={t}/>)}</Card>
         </View>}
         
-        {activeTab === 2 && (
-          <ConductTab
-            activityTitle="Parachute Drop Challenge"
-            videoSlots={[
-              { id: "baseline", label: "Drop 1 – No parachute (baseline)", hint: "Drop from same height. Slow-motion preferred." },
-              { id: "proto2",   label: "Drop 2 – First parachute design",  hint: "Capture full fall in frame." },
-              { id: "proto3",   label: "Drop 3 – Improved design",         hint: "Use ruler in frame for scale." },
-            ]}
-            sensorSummary={sensorSummary}
-            onSubmit={data => console.log("Parachute submitted:", data)}
-          />
-        )}
+{activeTab === 2 && (
+  <View>
+    <Card>
+      <CTitle>📷 Camera Access</CTitle>
+
+      <TouchableOpacity
+        onPress={checkCamera}
+        style={{
+          backgroundColor: "#3B82F6",
+          borderRadius: 10,
+          paddingVertical: 12,
+          alignItems: "center",
+          marginBottom: 10,
+        }}
+      >
+        <Text style={{ color: "#fff", fontWeight: "600" }}>
+          Enable Camera
+        </Text>
+      </TouchableOpacity>
+
+      <Text style={{ fontSize: 13, color: "#6B7280" }}>
+        {cameraStatus}
+      </Text>
+    </Card>
+
+    <ConductTab
+      activityTitle="Parachute Drop Challenge"
+      videoSlots={[
+        {
+          id: "baseline",
+          label: "Drop 1 – No parachute (baseline)",
+          hint: "Drop from same height. Slow-motion preferred.",
+        },
+        {
+          id: "proto2",
+          label: "Drop 2 – First parachute design",
+          hint: "Capture full fall in frame.",
+        },
+        {
+          id: "proto3",
+          label: "Drop 3 – Improved design",
+          hint: "Use ruler in frame for scale.",
+        },
+      ]}
+      sensorSummary={sensorSummary}
+      onSubmit={(data) => console.log("Parachute submitted:", data)}
+    />
+  </View>
+)}
 
         {activeTab === 3 && <View>
           <Card><CTitle>📊 Results Table</CTitle>
