@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import { Accelerometer } from "expo-sensors"; 
 import ScreenContainer from "../../src/components/ScreenContainer";
 
 // Install: npx expo install expo-sensors
