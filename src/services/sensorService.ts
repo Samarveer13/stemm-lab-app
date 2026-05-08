@@ -37,3 +37,17 @@ export function startGyroscopeReading(
 
   return () => subscription.remove();
 }
+
+export function startBreathingDetection(
+  onUpdate: (movement: number) => void
+) {
+  Accelerometer.setUpdateInterval(300);
+
+  const subscription = Accelerometer.addListener(({ z }) => {
+    const chestMovement = Math.abs(z);
+
+    onUpdate(chestMovement);
+  });
+
+  return () => subscription.remove();
+}
