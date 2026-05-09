@@ -11,11 +11,13 @@
       "bundleIdentifier": "com.stemmlab.app",
       "supportsTablet": true,
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSMicrophoneUsageDescription": "Used to measure sound levels for the Sound Pollution Hunter activity."
       }
     },
     "android": {
       "package": "com.stemmlab.app",
+      "permissions": ["RECORD_AUDIO"],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -42,6 +44,7 @@
           }
         }
       ],
+      "expo-av",
       "expo-sqlite",
       "expo-background-task",
       [

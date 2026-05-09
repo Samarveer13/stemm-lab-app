@@ -1,8 +1,8 @@
 // app/activities/sound.tsx
 
-
+import { Audio } from "expo-av";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Image,
@@ -15,10 +15,6 @@ import {
 import ScreenContainer from "../../src/components/ScreenContainer";
 import ActivitySubmitCard from "../../src/components/ActivitySubmitCard";
 
-// NOTE: For real dB measurement install expo-av:
-//   npx expo install expo-av
-// Then replace the simulated reading with Audio.Recording API.
-// The UI below is wired for real sensor data when available.
 
 const TAB_LABELS = ["Overview", "Instructions", "Measure", "Science"];
 
@@ -44,11 +40,11 @@ export default function SoundScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
 
-  // Simulated dB meter state
   const [isRecording, setIsRecording] = useState(false);
   const [currentDB, setCurrentDB] = useState<number | null>(null);
   const [peakDB, setPeakDB] = useState<number | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const recordingRef = useRef<Audio.Recording | null>(null);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Results
   const [actions, setActions] = useState<SoundAction[]>([
@@ -57,20 +53,54 @@ export default function SoundScreen() {
     { label: "Action 3 (e.g. stamping feet)", prediction: "", outcome: "", correct: "" },
   ]);
 
-  const startSimulation = () => {
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+      recordingRef.current?.stopAndUnloadAsync().catch(() => {});
+    };
+  }, []);
+
+  const startMeasuring = async () => {
+    const { granted } = await Audio.requestPermissionsAsync();
+    if (!granted) {
+      Alert.alert("Microphone Required", "Allow microphone access to measure sound levels.");
+      return;
+    }
+
+    await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
+
+    const { recording } = await Audio.Recording.createAsync({
+      ...Audio.RecordingOptionsPresets.HIGH_QUALITY,
+      isMeteringEnabled: true,
+    });
+
+    recordingRef.current = recording;
     setIsRecording(true);
     setPeakDB(null);
-    intervalRef.current = setInterval(() => {
-      // Simulated: replace with real Audio.getStatusAsync() reading
-      const simDB = Math.round(40 + Math.random() * 50);
-      setCurrentDB(simDB);
-      setPeakDB((prev) => (prev === null ? simDB : Math.max(prev, simDB)));
-    }, 300);
+
+    pollingRef.current = setInterval(async () => {
+      if (!recordingRef.current) return;
+      try {
+        const status = await recordingRef.current.getStatusAsync();
+        if (status.isRecording && status.metering !== undefined) {
+          // dBFS (−160…0) → approximate dB SPL via +90 offset
+          const db = Math.max(0, Math.min(120, Math.round(status.metering + 90)));
+          setCurrentDB(db);
+          setPeakDB((prev) => (prev === null ? db : Math.max(prev, db)));
+        }
+      } catch {
+        // recording may have already stopped
+      }
+    }, 100);
   };
 
-  const stopSimulation = () => {
+  const stopMeasuring = async () => {
     setIsRecording(false);
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null; }
+    if (recordingRef.current) {
+      try { await recordingRef.current.stopAndUnloadAsync(); } catch { /* already stopped */ }
+      recordingRef.current = null;
+    }
   };
 
   const logReading = () => {
@@ -84,7 +114,7 @@ export default function SoundScreen() {
           const updated = [...actions];
           updated[i].outcome = `${currentDB} dB`;
           setActions(updated);
-          stopSimulation();
+          stopMeasuring();
         },
       }))
     );
@@ -233,14 +263,14 @@ export default function SoundScreen() {
               <View style={{ flexDirection: "row", gap: 10, marginTop: 8 }}>
                 {!isRecording ? (
                   <TouchableOpacity
-                    onPress={startSimulation}
+                    onPress={startMeasuring}
                     style={{ flex: 1, backgroundColor: "#3B82F6", borderRadius: 10, paddingVertical: 12, alignItems: "center" }}
                   >
                     <Text style={{ color: "#fff", fontWeight: "600" }}>▶ Start</Text>
                   </TouchableOpacity>
                 ) : (
                   <TouchableOpacity
-                    onPress={stopSimulation}
+                    onPress={stopMeasuring}
                     style={{ flex: 1, backgroundColor: "#EF4444", borderRadius: 10, paddingVertical: 12, alignItems: "center" }}
                   >
                     <Text style={{ color: "#fff", fontWeight: "600" }}>⏹ Stop</Text>
@@ -255,7 +285,7 @@ export default function SoundScreen() {
                 </TouchableOpacity>
               </View>
               <Text style={{ fontSize: 11, color: "#9CA3AF", marginTop: 8, textAlign: "center" }}>
-                Note: Install expo-av for real microphone readings
+                Live microphone · values are approximate dB SPL
               </Text>
             </Card>
 
