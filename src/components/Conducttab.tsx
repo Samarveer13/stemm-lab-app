@@ -12,8 +12,8 @@ import {
 
 // Install these:
 //  npx expo install expo-image-picker expo-location expo-media-library
-// import * as ImagePicker from "expo-image-picker";
-// import * as Location from "expo-location";
+import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
 
 export type VideoSlot = {
   id: string;
@@ -181,29 +181,69 @@ export default function ConductTab({
   const [submitting, setSubmitting] = useState(false);
 
   const pickVideo = async (id: string) => {
-    // Real implementation:
-    // const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    // if (!perm.granted) return Alert.alert("Permission needed");
-    // const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Videos });
-    // if (!result.canceled) updateSlot(id, result.assets[0].uri);
+  Alert.alert(
+    "Add Video",
+    "Choose an option",
+    [
+      {
+        text: "📹 Record Now",
+        onPress: async () => {
+          const permission =
+            await ImagePicker.requestCameraPermissionsAsync();
 
-    // Simulated:
-    Alert.alert(
-      "Add Video",
-      "Choose an option",
-      [
-        {
-          text: "📹 Record Now",
-          onPress: () => updateSlot(id, `file://video_recorded_${Date.now()}.mp4`),
+          if (!permission.granted) {
+            Alert.alert(
+              "Permission Needed",
+              "Please allow camera access."
+            );
+            return;
+          }
+
+          const result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ["videos"],
+            allowsEditing: false,
+            quality: 1,
+            videoMaxDuration: 20,
+          });
+
+          if (!result.canceled) {
+            updateSlot(id, result.assets[0].uri);
+          }
         },
-        {
-          text: "📂 Choose from Library",
-          onPress: () => updateSlot(id, `file://video_library_${Date.now()}.mp4`),
+      },
+
+      {
+        text: "📂 Choose from Library",
+        onPress: async () => {
+          const permission =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+          if (!permission.granted) {
+            Alert.alert(
+              "Permission Needed",
+              "Please allow media library access."
+            );
+            return;
+          }
+
+          const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ["videos"],
+            quality: 1,
+          });
+
+          if (!result.canceled) {
+            updateSlot(id, result.assets[0].uri);
+          }
         },
-        { text: "Cancel", style: "cancel" },
-      ]
-    );
-  };
+      },
+
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+    ]
+  );
+};
 
   const updateSlot = (id: string, uri: string) => {
     setSlots((prev) => prev.map((s) => (s.id === id ? { ...s, uri } : s)));

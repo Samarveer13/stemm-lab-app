@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import ActivitySubmitCard from "../../src/components/ActivitySubmitCard";
+import { requestMicrophoneAccess } from "../../src/services/microphoneService";
 
 
 const TAB_LABELS = ["Overview", "Instructions", "Measure", "Science"];
