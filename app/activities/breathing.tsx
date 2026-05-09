@@ -12,12 +12,9 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import { startBreathingDetection } from "../../src/services/sensorService";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import ActivitySubmitCard from "../../src/components/ActivitySubmitCard";
-
-// Install: npx expo install expo-sensors
-// import { Accelerometer } from "expo-sensors";
-// Place phone on chest; breathing moves the phone up and down, detectable via Z-axis changes.
 
 const TAB_LABELS = ["Overview", "Instructions", "Sensor", "Results", "Science"];
 
@@ -61,35 +58,53 @@ export default function BreathingScreen() {
   }, [isActive, bpm]);
 
   const startSensor = () => {
-    setIsActive(true);
-    setElapsed(0);
-    setBreathCount(0);
-    setHistory([]);
+  setIsActive(true);
+  setElapsed(0);
+  setBreathCount(0);
+  setHistory([]);
 
-    timerRef.current = setInterval(() => setElapsed((e) => e + 1), 1000);
+  timerRef.current = setInterval(() => {
+    setElapsed((e) => e + 1);
+  }, 1000);
 
-    // Simulated breathing detection
-    // Real implementation: track Accelerometer z-axis peaks as breath cycles
-    // Each zero-crossing of the filtered signal = one breath
-    let fakeCycle = 0;
-    const baseRate = phase === "rest" ? 15 : phase === "exercise1" ? 25 : 35;
-    intervalRef.current = setInterval(() => {
-      fakeCycle += 1;
-      const noise = (Math.random() - 0.5) * 4;
-      const currentRate = Math.max(8, Math.min(50, baseRate + noise));
-      setBpm(Math.round(currentRate));
-      const sim = 0.4 + Math.sin(fakeCycle / 3) * 0.3;
-      setHistory((prev) => [...prev.slice(-50), parseFloat(sim.toFixed(3))]);
-      setBreathCount((prev) => prev + currentRate / 200); // rough accumulation
-    }, 300);
-  };
+  const stopBreathing =
+    startBreathingDetection((movementValue) => {
 
-  const stopSensor = () => {
-    setIsActive(false);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    if (timerRef.current) clearInterval(timerRef.current);
-    breathAnim.setValue(0.8);
-  };
+      const estimatedBreaths =
+        Math.max(
+          12,
+          Math.min(
+            40,
+            Math.floor(movementValue * 18)
+          )
+        );
+
+      setBpm(estimatedBreaths);
+
+      setHistory((prev) => [
+        ...prev.slice(-50),
+        parseFloat(movementValue.toFixed(3)),
+      ]);
+
+      setBreathCount((prev) => prev + estimatedBreaths / 200);
+    });
+
+  intervalRef.current = stopBreathing as any;
+};
+
+ const stopSensor = () => {
+  setIsActive(false);
+
+  if (intervalRef.current) {
+    (intervalRef.current as any)();
+  }
+
+  if (timerRef.current) {
+    clearInterval(timerRef.current);
+  }
+
+  breathAnim.setValue(0.8);
+};
 
   // Results
   const [rows, setRows] = useState<BreathRow[]>([

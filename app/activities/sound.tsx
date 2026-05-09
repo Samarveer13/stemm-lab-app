@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import ActivitySubmitCard from "../../src/components/ActivitySubmitCard";
+import { requestMicrophoneAccess } from "../../src/services/microphoneService";
 
 // NOTE: For real dB measurement install expo-av:
 //   npx expo install expo-av
@@ -57,16 +58,31 @@ export default function SoundScreen() {
     { label: "Action 3 (e.g. stamping feet)", prediction: "", outcome: "", correct: "" },
   ]);
 
-  const startSimulation = () => {
-    setIsRecording(true);
-    setPeakDB(null);
-    intervalRef.current = setInterval(() => {
-      // Simulated: replace with real Audio.getStatusAsync() reading
-      const simDB = Math.round(40 + Math.random() * 50);
-      setCurrentDB(simDB);
-      setPeakDB((prev) => (prev === null ? simDB : Math.max(prev, simDB)));
-    }, 300);
-  };
+  const startSimulation = async () => {
+  const granted = await requestMicrophoneAccess();
+
+  if (!granted) {
+    Alert.alert(
+      "Permission Needed",
+      "Please allow microphone access."
+    );
+    return;
+  }
+
+  setIsRecording(true);
+  setPeakDB(null);
+
+  intervalRef.current = setInterval(() => {
+    // Simulated microphone dB readings
+    const simDB = Math.round(40 + Math.random() * 50);
+
+    setCurrentDB(simDB);
+
+    setPeakDB((prev) =>
+      prev === null ? simDB : Math.max(prev, simDB)
+    );
+  }, 300);
+};
 
   const stopSimulation = () => {
     setIsRecording(false);
