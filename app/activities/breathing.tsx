@@ -15,10 +15,6 @@ import {
 import { startBreathingDetection } from "../../src/services/sensorService";
 import ScreenContainer from "../../src/components/ScreenContainer";
 
-// Install: npx expo install expo-sensors
-// import { Accelerometer } from "expo-sensors";
-// Place phone on chest; breathing moves the phone up and down, detectable via Z-axis changes.
-
 const TAB_LABELS = ["Overview", "Instructions", "Sensor", "Results", "Science"];
 
 type BreathRow = { phase: string; prediction: string; outcome: string; correct: string };
