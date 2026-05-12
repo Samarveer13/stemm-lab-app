@@ -58,6 +58,9 @@ export default function TabsLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen name="explore" options={{ href: null }} />
+      <Tabs.Screen name="leaderboard" options={{ href: null }} />
     </Tabs>
   );
 }
