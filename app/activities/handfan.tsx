@@ -4,11 +4,19 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
-import ConductTab from "../../src/components/Conducttab";
+import ConductTab, { type VideoSlot } from "../../src/components/Conducttab";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import ActivitySubmitCard from "../../src/components/ActivitySubmitCard";
 
 const TAB_LABELS = ["Overview", "Instructions", "Conduct", "Result", "Science"];
+
+const HANDFAN_SLOTS: VideoSlot[] = [
+  { id: "design1",   label: "Design 1 – Fan test video",        hint: "Stand paper upright. Film from the side to see the bend angle clearly." },
+  { id: "design2",   label: "Design 2 – Fan test video",        hint: "Keep the same distance (30 cm) for fair comparison." },
+  { id: "design3",   label: "Design 3 – Fan test video",        hint: "Try to capture the maximum bend point." },
+  { id: "cardboard", label: "Cardboard comparison video",       hint: "Same test with cardboard to compare stiffness." },
+];
+
 const MATERIALS = [
   { name: "Thin printer paper", k: 0.05, thickness: "0.1 mm" },
   { name: "Standard card stock", k: 0.2, thickness: "0.25 mm" },
@@ -20,6 +28,7 @@ type DesignRow = { label: string; prediction: string; outcome: string; notes: st
 export default function HandFanScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
+  const [videoSlots, setVideoSlots] = useState<VideoSlot[]>(HANDFAN_SLOTS);
   const [selectedMaterial, setSelectedMaterial] = useState(0);
   const [bendAngle, setBendAngle] = useState("");
   const [forceResult, setForceResult] = useState<string | null>(null);
@@ -75,14 +84,9 @@ export default function HandFanScreen() {
         {activeTab === 2 && (
           <ConductTab
             activityTitle="Hand Fan Challenge"
-            videoSlots={[
-              { id: "design1", label: "Design 1 – Fan test video", hint: "Stand paper upright. Film from the side to see the bend angle clearly." },
-              { id: "design2", label: "Design 2 – Fan test video", hint: "Keep the same distance (30 cm) for fair comparison." },
-              { id: "design3", label: "Design 3 – Fan test video", hint: "Try to capture the maximum bend point." },
-              { id: "cardboard", label: "Cardboard comparison video", hint: "Same test with cardboard to compare stiffness." },
-            ]}
+            videoSlots={HANDFAN_SLOTS}
             sensorSummary={sensorSummary}
-            onSubmit={undefined}
+            onSlotsChange={setVideoSlots}
             showSubmit={false}
           />
         )}
@@ -111,7 +115,7 @@ export default function HandFanScreen() {
             <TouchableOpacity onPress={calcForce} style={{backgroundColor:"#3B82F6",borderRadius:10,paddingVertical:12,alignItems:"center",marginTop:4}}><Text style={{color:"#fff",fontWeight:"600"}}>Calculate Force</Text></TouchableOpacity>
             {forceResult&&<View style={{backgroundColor:"#EFF6FF",borderRadius:10,padding:12,marginTop:10}}><Text style={{fontSize:14,color:"#1D4ED8",fontWeight:"600"}}>{forceResult}</Text></View>}
           </Card>
-          <ActivitySubmitCard activityId="handfan" activityName="Hand Fan Challenge" />
+          <ActivitySubmitCard activityId="handfan" activityName="Hand Fan Challenge" videos={videoSlots} sensorSummary={sensorSummary} />
         </View>}
 
 

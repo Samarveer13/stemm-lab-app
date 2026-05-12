@@ -16,6 +16,10 @@ export async function syncPendingResults(): Promise<void> {
           activityId: result.activityId,
           activityName: result.activityName,
           score: result.score,
+          rating: result.rating,
+          reflection: result.reflection,
+          sensorSummary: result.sensorSummary,
+          videoUrls: result.videoUrls,
         });
         await markSynced(result.id, firestoreId);
       } catch (err: unknown) {

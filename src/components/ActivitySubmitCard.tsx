@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useActivitySubmit } from "../hooks/useActivitySubmit";
+import type { VideoSlot } from "./Conducttab";
 
 interface Props {
   activityId: string;
   activityName: string;
+  videos?: VideoSlot[];
+  sensorSummary?: Record<string, string>;
 }
 
-export default function ActivitySubmitCard({ activityId, activityName }: Props) {
+export default function ActivitySubmitCard({ activityId, activityName, videos = [], sensorSummary = {} }: Props) {
   const submit = useActivitySubmit(activityId, activityName);
   const [rating, setRating] = useState(0);
   const [reflection, setReflection] = useState("");
@@ -41,6 +44,14 @@ export default function ActivitySubmitCard({ activityId, activityName }: Props) 
       <Text style={{ fontSize: 15, fontWeight: "700", color: "#1F2937", marginBottom: 12 }}>
         🚀 Submit Results
       </Text>
+
+      {videos.filter((v) => v.uri).length > 0 && (
+        <View style={{ backgroundColor: "#ECFDF5", borderRadius: 10, padding: 10, marginBottom: 12 }}>
+          <Text style={{ fontSize: 13, color: "#065F46", fontWeight: "600" }}>
+            📹 {videos.filter((v) => v.uri).length} video{videos.filter((v) => v.uri).length > 1 ? "s" : ""} ready to upload
+          </Text>
+        </View>
+      )}
 
       {/* Star Rating */}
       <Text style={{ fontSize: 13, color: "#6B7280", marginBottom: 6 }}>Rate this activity</Text>
@@ -85,11 +96,11 @@ export default function ActivitySubmitCard({ activityId, activityName }: Props) 
           setSubmitting(true);
           try {
             await submit({
-              videos: [],
+              videos,
               gps: null,
               rating,
               reflection,
-              sensorSummary: {},
+              sensorSummary,
               submittedAt: new Date().toISOString(),
             });
             setSubmitted(true);
@@ -108,7 +119,7 @@ export default function ActivitySubmitCard({ activityId, activityName }: Props) 
         {submitting ? (
           <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
             <ActivityIndicator color="#fff" size="small" />
-            <Text style={{ color: "#fff", fontWeight: "600", fontSize: 15 }}>Saving…</Text>
+            <Text style={{ color: "#fff", fontWeight: "600", fontSize: 15 }}>Uploading…</Text>
           </View>
         ) : (
           <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>

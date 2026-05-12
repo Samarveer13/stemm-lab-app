@@ -214,6 +214,9 @@ export default function ReactionScreen() {
     setAttempts(updated);
   };
 
+  const sensorSummary: Record<string, string> = {};
+  attempts.forEach((a, i) => { if (a.outcome) sensorSummary[`Attempt ${i + 1} reaction time`] = a.outcome; });
+
   return (
     <ScreenContainer>
       <View style={{ paddingTop: 60, paddingHorizontal: 20, paddingBottom: 10, flexDirection: "row", alignItems: "center" }}>
@@ -314,7 +317,7 @@ export default function ReactionScreen() {
                 </View>
               ))}
             </Card>
-            <ActivitySubmitCard activityId="reaction" activityName="Reaction Board Challenge" />
+            <ActivitySubmitCard activityId="reaction" activityName="Reaction Board Challenge" sensorSummary={sensorSummary} />
           </View>
         )}
 
