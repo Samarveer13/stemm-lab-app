@@ -1,23 +1,31 @@
 {
   "expo": {
-    "name": "temp-app",
-    "slug": "temp-app",
+    "name": "STEMM Lab",
+    "slug": "stemm-lab",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "tempapp",
+    "scheme": "stemmlab",
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.stemmlab.app",
       "supportsTablet": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSMicrophoneUsageDescription": "Used to measure sound levels for the Sound Pollution Hunter activity."
+        "NSMicrophoneUsageDescription": "Used to measure sound levels for the Sound Pollution Hunter activity.",
+        "NSLocationWhenInUseUsageDescription": "Used to tag your STEMM activities with your current location.",
+        "NSLocationAlwaysUsageDescription": "Used to tag your STEMM activities with your current location.",
+        "NSMotionUsageDescription": "Used to detect movement and breathing patterns during STEMM activities."
       }
     },
     "android": {
       "package": "com.stemmlab.app",
-      "permissions": ["RECORD_AUDIO"],
+      "versionCode": 1,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -47,6 +55,21 @@
       "expo-av",
       "expo-sqlite",
       "expo-background-task",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Used to tag your STEMM activities with your current location.",
+          "locationWhenInUsePermission": "Used to tag your STEMM activities with your current location.",
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Used to detect movement and breathing patterns during STEMM activities."
+        }
+      ],
       [
         "expo-notifications",
         {
