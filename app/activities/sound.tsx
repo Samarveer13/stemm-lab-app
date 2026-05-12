@@ -134,6 +134,10 @@ export default function SoundScreen() {
     setActions(updated);
   };
 
+  const sensorSummary: Record<string, string> = {};
+  if (peakDB !== null) sensorSummary["Peak dB recorded"] = `${peakDB} dB`;
+  actions.forEach((a, i) => { if (a.outcome) sensorSummary[`Action ${i + 1}`] = a.outcome; });
+
   return (
     <ScreenContainer>
       {/* Header */}
@@ -302,7 +306,7 @@ export default function SoundScreen() {
                 </View>
               ))}
             </Card>
-            <ActivitySubmitCard activityId="sound" activityName="Sound Pollution Hunter" />
+            <ActivitySubmitCard activityId="sound" activityName="Sound Pollution Hunter" sensorSummary={sensorSummary} />
           </View>
         )}
 

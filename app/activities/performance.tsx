@@ -90,6 +90,10 @@ export default function PerformanceScreen() {
 
   const { label: smLabel, color: smColor } = getSmoothnessLabel(smoothness);
 
+  const sensorSummary: Record<string, string> = {};
+  if (smoothness < 100) sensorSummary["Movement smoothness"] = `${Math.round(smoothness)}/100 (${smLabel})`;
+  attempts.forEach((a, i) => { if (a.outcome) sensorSummary[`Attempt ${i + 1} outcome`] = a.outcome; });
+
   const updateAttempt = (i: number, field: keyof AttemptRow, value: string) => {
     const updated = [...attempts];
     updated[i] = { ...updated[i], [field]: value };
@@ -253,7 +257,7 @@ export default function PerformanceScreen() {
                 </View>
               ))}
             </Card>
-            <ActivitySubmitCard activityId="performance" activityName="Human Performance Lab" />
+            <ActivitySubmitCard activityId="performance" activityName="Human Performance Lab" sensorSummary={sensorSummary} />
           </View>
         )}
 

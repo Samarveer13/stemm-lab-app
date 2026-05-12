@@ -8,6 +8,10 @@ export interface LocalActivityResult {
   activityId: string;
   activityName: string;
   score: number;
+  rating: number;
+  reflection: string;
+  sensorSummary: Record<string, string>;
+  videoUrls: string[];
   completedAt: string;
   synced: boolean;
   syncError: string | null;
@@ -24,9 +28,21 @@ export async function insertResult(
   const id = makeId();
   await db.runAsync(
     `INSERT INTO activity_results
-     (id, uid, team_id, activity_id, activity_name, score, completed_at, synced)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
-    [id, result.uid, result.teamId, result.activityId, result.activityName, result.score, result.completedAt]
+     (id, uid, team_id, activity_id, activity_name, score, rating, reflection, sensor_summary, video_urls, completed_at, synced)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+    [
+      id,
+      result.uid,
+      result.teamId,
+      result.activityId,
+      result.activityName,
+      result.score,
+      result.rating,
+      result.reflection,
+      JSON.stringify(result.sensorSummary),
+      JSON.stringify(result.videoUrls),
+      result.completedAt,
+    ]
   );
   return id;
 }
@@ -64,7 +80,15 @@ export async function getResultsByTeam(teamId: string): Promise<LocalActivityRes
   return rows.map(rowToResult);
 }
 
+function parseSensorSummary(raw: unknown): Record<string, string> {
+  try { return JSON.parse(raw as string); } catch { return {}; }
+}
+
 function rowToResult(row: Record<string, unknown>): LocalActivityResult {
+  let videoUrls: string[] = [];
+  try {
+    videoUrls = JSON.parse((row.video_urls as string | null) ?? "[]");
+  } catch {}
   return {
     id: row.id as string,
     firestoreId: (row.firestore_id as string | null) ?? null,
@@ -73,6 +97,10 @@ function rowToResult(row: Record<string, unknown>): LocalActivityResult {
     activityId: row.activity_id as string,
     activityName: row.activity_name as string,
     score: row.score as number,
+    rating: (row.rating as number | null) ?? 0,
+    reflection: (row.reflection as string | null) ?? "",
+    sensorSummary: parseSensorSummary(row.sensor_summary),
+    videoUrls,
     completedAt: row.completed_at as string,
     synced: row.synced === 1,
     syncError: (row.sync_error as string | null) ?? null,

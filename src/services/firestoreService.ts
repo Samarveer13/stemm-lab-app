@@ -47,6 +47,10 @@ export interface ActivityResult {
   activityId: string;
   activityName: string;
   score: number;
+  rating: number;
+  reflection: string;
+  sensorSummary: Record<string, string>;
+  videoUrls: string[];
   completedAt: Timestamp;
 }
 

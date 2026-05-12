@@ -10,10 +10,9 @@ import {
     View
 } from "react-native";
 
-// Install these:
-//  npx expo install expo-image-picker expo-location expo-media-library
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
+import { Video, ResizeMode } from "expo-av";
 
 export type VideoSlot = {
   id: string;
@@ -27,6 +26,7 @@ export type ConductTabProps = {
   videoSlots: VideoSlot[];           // Define per activity how many/what videos needed
   sensorSummary?: Record<string, string>; // Auto-populated from sensor tab, e.g. {BPM: "18", Peak dB: "72"}
   onSubmit?: (data: SubmitPayload) => void | Promise<void>;
+  onSlotsChange?: (slots: VideoSlot[]) => void;
   showSubmit?: boolean;
 };
 
@@ -75,6 +75,7 @@ function VideoSlotCard({
         marginBottom: 10,
       }}
     >
+      {/* Header row */}
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 13, fontWeight: "600", color: "#374151" }}>{slot.label}</Text>
@@ -90,19 +91,31 @@ function VideoSlotCard({
       </View>
 
       {hasVideo ? (
-        <View style={{ flexDirection: "row", gap: 8, marginTop: 10 }}>
-          <View style={{ flex: 1, backgroundColor: "#D1FAE5", borderRadius: 8, paddingVertical: 8, paddingHorizontal: 10 }}>
-            <Text style={{ fontSize: 12, color: "#065F46" }} numberOfLines={1}>
-              📹 {slot.uri!.split("/").pop()}
-            </Text>
+        <>
+          {/* Inline video preview */}
+          <Video
+            source={{ uri: slot.uri! }}
+            style={{ width: "100%", height: 180, borderRadius: 8, marginTop: 10, backgroundColor: "#000" }}
+            resizeMode={ResizeMode.CONTAIN}
+            useNativeControls
+            isLooping={false}
+          />
+          {/* Action buttons */}
+          <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
+            <TouchableOpacity
+              onPress={() => onPick(slot.id)}
+              style={{ flex: 1, backgroundColor: "#EFF6FF", borderRadius: 8, paddingVertical: 9, alignItems: "center", borderWidth: 1, borderColor: "#BFDBFE" }}
+            >
+              <Text style={{ fontSize: 12, color: "#1D4ED8", fontWeight: "600" }}>🔄 Replace</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => onRemove(slot.id)}
+              style={{ flex: 1, backgroundColor: "#FEE2E2", borderRadius: 8, paddingVertical: 9, alignItems: "center" }}
+            >
+              <Text style={{ fontSize: 12, color: "#EF4444", fontWeight: "600" }}>🗑 Remove</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            onPress={() => onRemove(slot.id)}
-            style={{ backgroundColor: "#FEE2E2", borderRadius: 8, paddingVertical: 8, paddingHorizontal: 10 }}
-          >
-            <Text style={{ fontSize: 12, color: "#EF4444" }}>Remove</Text>
-          </TouchableOpacity>
-        </View>
+        </>
       ) : (
         <View style={{ flexDirection: "row", gap: 8, marginTop: 10 }}>
           <TouchableOpacity
@@ -170,6 +183,7 @@ export default function ConductTab({
   videoSlots: initialSlots,
   sensorSummary = {},
   onSubmit,
+  onSlotsChange,
   showSubmit = true,
 }: ConductTabProps) {
   const [slots, setSlots] = useState<VideoSlot[]>(initialSlots);
@@ -246,11 +260,19 @@ export default function ConductTab({
 };
 
   const updateSlot = (id: string, uri: string) => {
-    setSlots((prev) => prev.map((s) => (s.id === id ? { ...s, uri } : s)));
+    setSlots((prev) => {
+      const next = prev.map((s) => (s.id === id ? { ...s, uri } : s));
+      onSlotsChange?.(next);
+      return next;
+    });
   };
 
   const removeSlot = (id: string) => {
-    setSlots((prev) => prev.map((s) => (s.id === id ? { ...s, uri: undefined } : s)));
+    setSlots((prev) => {
+      const next = prev.map((s) => (s.id === id ? { ...s, uri: undefined } : s));
+      onSlotsChange?.(next);
+      return next;
+    });
   };
 
   const tagGps = async () => {
@@ -276,18 +298,20 @@ export default function ConductTab({
       return;
     }
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500)); // Simulate upload
-    const payload: SubmitPayload = {
-      videos: slots.filter((s) => s.uri),
-      gps,
-      rating,
-      reflection,
-      sensorSummary,
-      submittedAt: new Date().toISOString(),
-    };
-    onSubmit?.(payload);
-    setSubmitting(false);
-    setSubmitted(true);
+    try {
+      const payload: SubmitPayload = {
+        videos: slots.filter((s) => s.uri),
+        gps,
+        rating,
+        reflection,
+        sensorSummary,
+        submittedAt: new Date().toISOString(),
+      };
+      await onSubmit?.(payload);
+      setSubmitted(true);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {

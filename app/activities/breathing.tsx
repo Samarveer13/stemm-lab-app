@@ -119,6 +119,10 @@ export default function BreathingScreen() {
     setRows(updated);
   };
 
+  const sensorSummary: Record<string, string> = {};
+  if (bpm > 0) sensorSummary["Live BPM reading"] = `${bpm} BPM`;
+  rows.forEach((r) => { if (r.outcome) sensorSummary[r.phase] = r.outcome; });
+
   const getPhaseColor = () => {
     if (phase === "rest") return "#3B82F6";
     if (phase === "exercise1") return "#F59E0B";
@@ -331,7 +335,7 @@ export default function BreathingScreen() {
                 </View>
               ))}
             </Card>
-            <ActivitySubmitCard activityId="breathing" activityName="Breathing Pace Trainer" />
+            <ActivitySubmitCard activityId="breathing" activityName="Breathing Pace Trainer" sensorSummary={sensorSummary} />
           </View>
         )}
 

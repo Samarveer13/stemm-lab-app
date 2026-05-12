@@ -98,6 +98,10 @@ export default function EarthquakeScreen() {
     setDesigns(updated);
   };
 
+  const sensorSummary: Record<string, string> = {};
+  if (peakVibration > 0) sensorSummary["Peak vibration"] = `${peakVibration.toFixed(3)} m/s²`;
+  designs.forEach((d, i) => { if (d.outcome) sensorSummary[`Design ${i + 1} movement`] = d.outcome; });
+
   return (
     <ScreenContainer>
       <View style={{ paddingTop: 60, paddingHorizontal: 20, paddingBottom: 10, flexDirection: "row", alignItems: "center" }}>
@@ -266,7 +270,7 @@ export default function EarthquakeScreen() {
                 </View>
               ))}
             </Card>
-            <ActivitySubmitCard activityId="earthquake" activityName="Earthquake-Resistant Structure" />
+            <ActivitySubmitCard activityId="earthquake" activityName="Earthquake-Resistant Structure" sensorSummary={sensorSummary} />
           </View>
         )}
 

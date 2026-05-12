@@ -5,7 +5,7 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
-import ConductTab from "../../src/components/Conducttab";
+import ConductTab, { type VideoSlot } from "../../src/components/Conducttab";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import ActivitySubmitCard from "../../src/components/ActivitySubmitCard";
 import { requestCameraAccess } from "../../src/services/cameraService";
@@ -14,9 +14,16 @@ import { requestCameraAccess } from "../../src/services/cameraService";
 type TrialRow = { label: string; prediction: string; time: string; correct: string; stopTime: string };
 const TAB_LABELS = ["Overview", "Instructions", "Conduct", "Results", "Science"];
 
+const PARACHUTE_SLOTS: VideoSlot[] = [
+  { id: "baseline", label: "Drop 1 – No parachute (baseline)", hint: "Drop from same height. Slow-motion preferred." },
+  { id: "proto2",   label: "Drop 2 – First parachute design",  hint: "Capture full fall in frame." },
+  { id: "proto3",   label: "Drop 3 – Improved design",         hint: "Use ruler in frame for scale." },
+];
+
 export default function ParachuteScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
+  const [videoSlots, setVideoSlots] = useState<VideoSlot[]>(PARACHUTE_SLOTS);
   const [trials, setTrials] = useState<TrialRow[]>([
     { label: "Action 1 – No parachute (baseline)", prediction: "", time: "", correct: "", stopTime: "" },
     { label: "Action 2 – Plastic, 4 corners tied", prediction: "", time: "", correct: "", stopTime: "" },
@@ -93,13 +100,10 @@ export default function ParachuteScreen() {
             </Card>
             <ConductTab
               activityTitle="Parachute Drop Challenge"
-              videoSlots={[
-                { id: "baseline", label: "Drop 1 – No parachute (baseline)", hint: "Drop from same height. Slow-motion preferred." },
-                { id: "proto2",   label: "Drop 2 – First parachute design",  hint: "Capture full fall in frame." },
-                { id: "proto3",   label: "Drop 3 – Improved design",         hint: "Use ruler in frame for scale." },
-              ]}
+              videoSlots={PARACHUTE_SLOTS}
               sensorSummary={sensorSummary}
-              onSubmit={(data) => console.log("Parachute submitted:", data)}
+              onSlotsChange={setVideoSlots}
+              showSubmit={false}
             />
           </View>
         )}
@@ -128,7 +132,7 @@ export default function ParachuteScreen() {
               ))}
             </View>}
           </Card>
-          <ActivitySubmitCard activityId="parachute" activityName="Parachute Drop Challenge" />
+          <ActivitySubmitCard activityId="parachute" activityName="Parachute Drop Challenge" videos={videoSlots} sensorSummary={sensorSummary} />
         </View>}
 
 
