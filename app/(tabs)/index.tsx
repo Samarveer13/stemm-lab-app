@@ -4,6 +4,7 @@ import ScreenContainer from "../../src/components/ScreenContainer";
 import CustomButton from "../../src/components/CustomButton";
 import { useAccessibility } from "../../src/context/AccessibilityContext";
 import { useAuth } from "../../src/context/AuthContext";
+import AdBanner from "../../src/components/AdBanner";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -63,6 +64,8 @@ export default function HomeScreen() {
           title="Upload Experiment"
           onPress={() => router.push("/activity-hub")}
         />
+
+        <AdBanner />
       </View>
     </ScreenContainer>
   );

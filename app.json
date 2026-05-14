@@ -78,8 +78,7 @@
           "defaultChannel": "default",
           "sounds": []
         }
-      ],
-      "react-native-google-mobile-ads"
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
