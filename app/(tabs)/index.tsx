@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import { useAccessibility } from "../../src/context/AccessibilityContext";
 import { useAuth } from "../../src/context/AuthContext";
+import AdBanner from "../../src/components/AdBanner";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -121,6 +122,8 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
         </View>
+
+        <AdBanner />
       </View>
     </ScreenContainer>
   );
