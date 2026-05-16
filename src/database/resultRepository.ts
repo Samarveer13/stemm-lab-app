@@ -1,4 +1,5 @@
 import { getDb } from "./sqlite";
+import { encrypt, decrypt } from "../utils/encryption";
 
 export interface LocalActivityResult {
   id: string;
@@ -26,6 +27,7 @@ export async function insertResult(
 ): Promise<string> {
   const db = await getDb();
   const id = makeId();
+  const encReflection = await encrypt(result.reflection);
   await db.runAsync(
     `INSERT INTO activity_results
      (id, uid, team_id, activity_id, activity_name, score, rating, reflection, sensor_summary, video_urls, completed_at, synced)
@@ -38,7 +40,7 @@ export async function insertResult(
       result.activityName,
       result.score,
       result.rating,
-      result.reflection,
+      encReflection,
       JSON.stringify(result.sensorSummary),
       JSON.stringify(result.videoUrls),
       result.completedAt,
@@ -68,7 +70,7 @@ export async function getPendingResults(): Promise<LocalActivityResult[]> {
   const rows = await db.getAllAsync<Record<string, unknown>>(
     `SELECT * FROM activity_results WHERE synced = 0 ORDER BY completed_at ASC`
   );
-  return rows.map(rowToResult);
+  return Promise.all(rows.map(rowToResult));
 }
 
 export async function getResultsByTeam(teamId: string): Promise<LocalActivityResult[]> {
@@ -77,18 +79,22 @@ export async function getResultsByTeam(teamId: string): Promise<LocalActivityRes
     `SELECT * FROM activity_results WHERE team_id = ? ORDER BY completed_at DESC`,
     [teamId]
   );
-  return rows.map(rowToResult);
+  return Promise.all(rows.map(rowToResult));
 }
 
 function parseSensorSummary(raw: unknown): Record<string, string> {
   try { return JSON.parse(raw as string); } catch { return {}; }
 }
 
-function rowToResult(row: Record<string, unknown>): LocalActivityResult {
+async function rowToResult(row: Record<string, unknown>): Promise<LocalActivityResult> {
   let videoUrls: string[] = [];
   try {
     videoUrls = JSON.parse((row.video_urls as string | null) ?? "[]");
   } catch {}
+
+  const rawReflection = (row.reflection as string | null) ?? "";
+  const reflection = rawReflection ? await decrypt(rawReflection) : "";
+
   return {
     id: row.id as string,
     firestoreId: (row.firestore_id as string | null) ?? null,
@@ -98,7 +104,7 @@ function rowToResult(row: Record<string, unknown>): LocalActivityResult {
     activityName: row.activity_name as string,
     score: row.score as number,
     rating: (row.rating as number | null) ?? 0,
-    reflection: (row.reflection as string | null) ?? "",
+    reflection,
     sensorSummary: parseSensorSummary(row.sensor_summary),
     videoUrls,
     completedAt: row.completed_at as string,

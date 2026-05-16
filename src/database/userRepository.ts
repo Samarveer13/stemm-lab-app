@@ -1,4 +1,5 @@
 import { getDb } from "./sqlite";
+import { encrypt, decrypt, encryptNullable, decryptNullable } from "../utils/encryption";
 
 export interface CachedUserProfile {
   uid: string;
@@ -15,6 +16,13 @@ export interface CachedUserProfile {
 
 export async function upsertUserProfile(profile: CachedUserProfile): Promise<void> {
   const db = await getDb();
+
+  const [encEmail, encMemberNames, encTeamCode] = await Promise.all([
+    encryptNullable(profile.email),
+    encrypt(JSON.stringify(profile.memberNames)),
+    encrypt(profile.teamCode),
+  ]);
+
   await db.runAsync(
     `INSERT INTO user_profile
      (uid, member_names, team_id, team_name, team_code, year_level, email, is_anonymous, created_at, updated_at)
@@ -30,12 +38,12 @@ export async function upsertUserProfile(profile: CachedUserProfile): Promise<voi
        updated_at    = excluded.updated_at`,
     [
       profile.uid,
-      JSON.stringify(profile.memberNames),
+      encMemberNames,
       profile.teamId,
       profile.teamName,
-      profile.teamCode,
+      encTeamCode,
       profile.yearLevel,
-      profile.email,
+      encEmail,
       profile.isAnonymous ? 1 : 0,
       profile.createdAt,
       profile.updatedAt,
@@ -50,14 +58,21 @@ export async function getUserProfileFromCache(uid: string): Promise<CachedUserPr
     [uid]
   );
   if (!row) return null;
+
+  const [memberNames, teamCode, email] = await Promise.all([
+    decrypt(row.member_names as string).then((s) => JSON.parse(s) as string[]),
+    decrypt(row.team_code as string),
+    decryptNullable((row.email as string | null) ?? null),
+  ]);
+
   return {
     uid: row.uid as string,
-    memberNames: JSON.parse(row.member_names as string),
+    memberNames,
     teamId: row.team_id as string,
     teamName: row.team_name as string,
-    teamCode: row.team_code as string,
+    teamCode,
     yearLevel: row.year_level as string,
-    email: (row.email as string | null) ?? null,
+    email,
     isAnonymous: row.is_anonymous === 1,
     createdAt: (row.created_at as string | null) ?? null,
     updatedAt: row.updated_at as string,
