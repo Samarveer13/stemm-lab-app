@@ -220,7 +220,7 @@ export default function ReactionScreen() {
   return (
     <ScreenContainer>
       <View style={{ paddingTop: 60, paddingHorizontal: 20, paddingBottom: 10, flexDirection: "row", alignItems: "center" }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 4, padding: 12 }}>
           <Text style={{ fontSize: 22, color: "#3B82F6" }}>←</Text>
         </TouchableOpacity>
         <Text style={{ fontSize: 16, color: "#3B82F6", fontWeight: "600" }}>STEMM Lab</Text>

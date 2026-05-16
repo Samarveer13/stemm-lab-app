@@ -2,8 +2,9 @@
 
 
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ConductTab, { type VideoSlot } from "../../src/components/Conducttab";
 import ScreenContainer from "../../src/components/ScreenContainer";
@@ -32,6 +33,27 @@ export default function ParachuteScreen() {
   const [dropHeight, setDropHeight] = useState(""); const [fallTime, setFallTime] = useState(""); const [mass, setMass] = useState(""); const [contactTime, setContactTime] = useState("");
   const [calc, setCalc] = useState<{ vFinal: number; accel: number; netForce: number; weight: number; drag: number; gForce: number | null } | null>(null);
   const [cameraStatus, setCameraStatus] = useState("Camera not checked");
+
+  const draftReadyRef = useRef(false);
+  useEffect(() => {
+    AsyncStorage.getItem('@stemm_form_parachute').then((raw) => {
+      if (raw) {
+        try {
+          const d = JSON.parse(raw);
+          if (d.trials) setTrials(d.trials);
+          if (d.dropHeight !== undefined) setDropHeight(d.dropHeight);
+          if (d.fallTime !== undefined) setFallTime(d.fallTime);
+          if (d.mass !== undefined) setMass(d.mass);
+          if (d.contactTime !== undefined) setContactTime(d.contactTime);
+        } catch {}
+      }
+      draftReadyRef.current = true;
+    });
+  }, []);
+  useEffect(() => {
+    if (!draftReadyRef.current) return;
+    AsyncStorage.setItem('@stemm_form_parachute', JSON.stringify({ trials, dropHeight, fallTime, mass, contactTime })).catch(() => {});
+  }, [trials, dropHeight, fallTime, mass, contactTime]);
 
   const updateTrial = (i: number, f: keyof TrialRow, v: string) => { const u = [...trials]; u[i] = { ...u[i], [f]: v }; setTrials(u); };
 
@@ -100,7 +122,7 @@ export default function ParachuteScreen() {
             </Card>
             <ConductTab
               activityTitle="Parachute Drop Challenge"
-              videoSlots={PARACHUTE_SLOTS}
+              videoSlots={videoSlots}
               sensorSummary={sensorSummary}
               onSlotsChange={setVideoSlots}
               showSubmit={false}
@@ -156,7 +178,7 @@ function Header({ onBack, title, subtitle }: { onBack: () => void; title: string
   return (
     <View>
       <View style={{ paddingTop: 60, paddingHorizontal: 20, paddingBottom: 10, flexDirection: "row", alignItems: "center" }}>
-        <TouchableOpacity onPress={onBack} style={{ marginRight: 12 }}><Text style={{ fontSize: 22, color: "#3B82F6" }}>←</Text></TouchableOpacity>
+        <TouchableOpacity onPress={onBack} style={{ marginRight: 4, padding: 12 }}><Text style={{ fontSize: 24, color: "#3B82F6" }}>←</Text></TouchableOpacity>
         <Text style={{ fontSize: 16, color: "#3B82F6", fontWeight: "600" }}>STEMM Lab</Text>
       </View>
       <View style={{ paddingHorizontal: 20, marginBottom: 8 }}>

@@ -1,5 +1,6 @@
 // app/activities/earthquake.tsx
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -92,6 +93,23 @@ export default function EarthquakeScreen() {
     return "#EF4444";
   };
 
+  const draftReadyRef = useRef(false);
+  useEffect(() => {
+    AsyncStorage.getItem('@stemm_form_earthquake').then((raw) => {
+      if (raw) {
+        try {
+          const d = JSON.parse(raw);
+          if (d.designs) setDesigns(d.designs);
+        } catch {}
+      }
+      draftReadyRef.current = true;
+    });
+  }, []);
+  useEffect(() => {
+    if (!draftReadyRef.current) return;
+    AsyncStorage.setItem('@stemm_form_earthquake', JSON.stringify({ designs })).catch(() => {});
+  }, [designs]);
+
   const updateDesign = (i: number, field: keyof DesignRow, value: string) => {
     const updated = [...designs];
     updated[i] = { ...updated[i], [field]: value };
@@ -105,7 +123,7 @@ export default function EarthquakeScreen() {
   return (
     <ScreenContainer>
       <View style={{ paddingTop: 60, paddingHorizontal: 20, paddingBottom: 10, flexDirection: "row", alignItems: "center" }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 4, padding: 12 }}>
           <Text style={{ fontSize: 22, color: "#3B82F6" }}>←</Text>
         </TouchableOpacity>
         <Text style={{ fontSize: 16, color: "#3B82F6", fontWeight: "600" }}>STEMM Lab</Text>
