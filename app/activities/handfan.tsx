@@ -1,8 +1,9 @@
 // app/activities/handfan.tsx
 
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ConductTab, { type VideoSlot } from "../../src/components/Conducttab";
 import ScreenContainer from "../../src/components/ScreenContainer";
@@ -37,6 +38,25 @@ export default function HandFanScreen() {
     { label: "Design 2 – No folds (flat)", prediction: "", outcome: "", notes: "" },
     { label: "Design 3 – Custom design", prediction: "", outcome: "", notes: "" },
   ]);
+
+  const draftReadyRef = useRef(false);
+  useEffect(() => {
+    AsyncStorage.getItem('@stemm_form_handfan').then((raw) => {
+      if (raw) {
+        try {
+          const d = JSON.parse(raw);
+          if (d.designs) setDesigns(d.designs);
+          if (typeof d.selectedMaterial === 'number') setSelectedMaterial(d.selectedMaterial);
+          if (d.bendAngle !== undefined) setBendAngle(d.bendAngle);
+        } catch {}
+      }
+      draftReadyRef.current = true;
+    });
+  }, []);
+  useEffect(() => {
+    if (!draftReadyRef.current) return;
+    AsyncStorage.setItem('@stemm_form_handfan', JSON.stringify({ designs, selectedMaterial, bendAngle })).catch(() => {});
+  }, [designs, selectedMaterial, bendAngle]);
 
   const calcForce = () => {
     const deg = parseFloat(bendAngle);
@@ -84,7 +104,7 @@ export default function HandFanScreen() {
         {activeTab === 2 && (
           <ConductTab
             activityTitle="Hand Fan Challenge"
-            videoSlots={HANDFAN_SLOTS}
+            videoSlots={videoSlots}
             sensorSummary={sensorSummary}
             onSlotsChange={setVideoSlots}
             showSubmit={false}
@@ -138,7 +158,7 @@ export default function HandFanScreen() {
   );
 }
 
-function Header({ onBack, title, subtitle }: { onBack: () => void; title: string; subtitle: string }) { return <View><View style={{paddingTop:60,paddingHorizontal:20,paddingBottom:10,flexDirection:"row",alignItems:"center"}}><TouchableOpacity onPress={onBack} style={{marginRight:12}}><Text style={{fontSize:22,color:"#3B82F6"}}>←</Text></TouchableOpacity><Text style={{fontSize:16,color:"#3B82F6",fontWeight:"600"}}>STEMM Lab</Text></View><View style={{paddingHorizontal:20,marginBottom:8}}><Text style={{fontSize:20,fontWeight:"700",color:"#1F2937"}}>{title}</Text><Text style={{fontSize:13,color:"#9CA3AF",marginTop:2}}>{subtitle}</Text></View></View>; }
+function Header({ onBack, title, subtitle }: { onBack: () => void; title: string; subtitle: string }) { return <View><View style={{paddingTop:60,paddingHorizontal:20,paddingBottom:10,flexDirection:"row",alignItems:"center"}}><TouchableOpacity onPress={onBack} style={{marginRight:4,padding:12}}><Text style={{fontSize:24,color:"#3B82F6"}}>←</Text></TouchableOpacity><Text style={{fontSize:16,color:"#3B82F6",fontWeight:"600"}}>STEMM Lab</Text></View><View style={{paddingHorizontal:20,marginBottom:8}}><Text style={{fontSize:20,fontWeight:"700",color:"#1F2937"}}>{title}</Text><Text style={{fontSize:13,color:"#9CA3AF",marginTop:2}}>{subtitle}</Text></View></View>; }
 function TabBar({
   tabs,
   active,

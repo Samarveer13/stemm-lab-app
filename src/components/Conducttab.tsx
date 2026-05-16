@@ -1,6 +1,7 @@
 
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     ActivityIndicator,
     Alert,
@@ -193,6 +194,34 @@ export default function ConductTab({
   const [reflection, setReflection] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const draftKey = `@stemm_conduct_${activityTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
+  const draftReadyRef = useRef(false);
+
+  // Restore draft on mount
+  useEffect(() => {
+    AsyncStorage.getItem(draftKey).then((raw) => {
+      if (raw) {
+        try {
+          const d = JSON.parse(raw);
+          if (Array.isArray(d.slots) && d.slots.some((s: VideoSlot) => s.uri)) {
+            setSlots(d.slots);
+            onSlotsChange?.(d.slots);
+          }
+          if (d.gps) setGps(d.gps);
+          if (typeof d.rating === 'number' && d.rating > 0) setRating(d.rating);
+          if (typeof d.reflection === 'string' && d.reflection.length > 0) setReflection(d.reflection);
+        } catch {}
+      }
+      draftReadyRef.current = true;
+    });
+  }, [draftKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Save draft on every relevant change
+  useEffect(() => {
+    if (!draftReadyRef.current) return;
+    AsyncStorage.setItem(draftKey, JSON.stringify({ slots, gps, rating, reflection })).catch(() => {});
+  }, [draftKey, slots, gps, rating, reflection]);
 
   const pickVideo = async (id: string) => {
   Alert.alert(

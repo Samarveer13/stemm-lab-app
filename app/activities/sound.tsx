@@ -1,5 +1,6 @@
 // app/activities/sound.tsx
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from "expo-av";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -128,6 +129,23 @@ export default function SoundScreen() {
     return "#EF4444";
   };
 
+  const draftReadyRef = useRef(false);
+  useEffect(() => {
+    AsyncStorage.getItem('@stemm_form_sound').then((raw) => {
+      if (raw) {
+        try {
+          const d = JSON.parse(raw);
+          if (d.actions) setActions(d.actions);
+        } catch {}
+      }
+      draftReadyRef.current = true;
+    });
+  }, []);
+  useEffect(() => {
+    if (!draftReadyRef.current) return;
+    AsyncStorage.setItem('@stemm_form_sound', JSON.stringify({ actions })).catch(() => {});
+  }, [actions]);
+
   const updateAction = (i: number, field: keyof SoundAction, value: string) => {
     const updated = [...actions];
     updated[i] = { ...updated[i], [field]: value };
@@ -142,7 +160,7 @@ export default function SoundScreen() {
     <ScreenContainer>
       {/* Header */}
       <View style={{ paddingTop: 60, paddingHorizontal: 20, paddingBottom: 10, flexDirection: "row", alignItems: "center" }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 4, padding: 12 }}>
           <Text style={{ fontSize: 22, color: "#3B82F6" }}>←</Text>
         </TouchableOpacity>
         <Text style={{ fontSize: 16, color: "#3B82F6", fontWeight: "600" }}>STEMM Lab</Text>

@@ -1,6 +1,7 @@
 // app/activities/breathing.tsx
 
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -113,6 +114,23 @@ export default function BreathingScreen() {
     { phase: "After Exercise 2 (100 star jumps)", prediction: "", outcome: "", correct: "" },
   ]);
 
+  const draftReadyRef = useRef(false);
+  useEffect(() => {
+    AsyncStorage.getItem('@stemm_form_breathing').then((raw) => {
+      if (raw) {
+        try {
+          const d = JSON.parse(raw);
+          if (d.rows) setRows(d.rows);
+        } catch {}
+      }
+      draftReadyRef.current = true;
+    });
+  }, []);
+  useEffect(() => {
+    if (!draftReadyRef.current) return;
+    AsyncStorage.setItem('@stemm_form_breathing', JSON.stringify({ rows })).catch(() => {});
+  }, [rows]);
+
   const updateRow = (i: number, field: keyof BreathRow, value: string) => {
     const updated = [...rows];
     updated[i] = { ...updated[i], [field]: value };
@@ -138,7 +156,7 @@ export default function BreathingScreen() {
   return (
     <ScreenContainer>
       <View style={{ paddingTop: 60, paddingHorizontal: 20, paddingBottom: 10, flexDirection: "row", alignItems: "center" }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 4, padding: 12 }}>
           <Text style={{ fontSize: 22, color: "#3B82F6" }}>←</Text>
         </TouchableOpacity>
         <Text style={{ fontSize: 16, color: "#3B82F6", fontWeight: "600" }}>STEMM Lab</Text>

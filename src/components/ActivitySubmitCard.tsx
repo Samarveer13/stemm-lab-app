@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useActivitySubmit } from "../hooks/useActivitySubmit";
 import type { VideoSlot } from "./Conducttab";
 
@@ -16,6 +17,27 @@ export default function ActivitySubmitCard({ activityId, activityName, videos = 
   const [reflection, setReflection] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const draftKey = `@stemm_submit_${activityId}`;
+  const draftReadyRef = useRef(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem(draftKey).then((raw) => {
+      if (raw) {
+        try {
+          const d = JSON.parse(raw);
+          if (typeof d.rating === 'number' && d.rating > 0) setRating(d.rating);
+          if (typeof d.reflection === 'string' && d.reflection.length > 0) setReflection(d.reflection);
+        } catch {}
+      }
+      draftReadyRef.current = true;
+    });
+  }, [draftKey]);
+
+  useEffect(() => {
+    if (!draftReadyRef.current) return;
+    AsyncStorage.setItem(draftKey, JSON.stringify({ rating, reflection })).catch(() => {});
+  }, [draftKey, rating, reflection]);
 
   const canSubmit = rating > 0 && reflection.trim().length > 10;
 

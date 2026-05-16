@@ -1,5 +1,6 @@
 // app/activities/performance.tsx
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -94,6 +95,23 @@ export default function PerformanceScreen() {
   if (smoothness < 100) sensorSummary["Movement smoothness"] = `${Math.round(smoothness)}/100 (${smLabel})`;
   attempts.forEach((a, i) => { if (a.outcome) sensorSummary[`Attempt ${i + 1} outcome`] = a.outcome; });
 
+  const draftReadyRef = useRef(false);
+  useEffect(() => {
+    AsyncStorage.getItem('@stemm_form_performance').then((raw) => {
+      if (raw) {
+        try {
+          const d = JSON.parse(raw);
+          if (d.attempts) setAttempts(d.attempts);
+        } catch {}
+      }
+      draftReadyRef.current = true;
+    });
+  }, []);
+  useEffect(() => {
+    if (!draftReadyRef.current) return;
+    AsyncStorage.setItem('@stemm_form_performance', JSON.stringify({ attempts })).catch(() => {});
+  }, [attempts]);
+
   const updateAttempt = (i: number, field: keyof AttemptRow, value: string) => {
     const updated = [...attempts];
     updated[i] = { ...updated[i], [field]: value };
@@ -103,7 +121,7 @@ export default function PerformanceScreen() {
   return (
     <ScreenContainer>
       <View style={{ paddingTop: 60, paddingHorizontal: 20, paddingBottom: 10, flexDirection: "row", alignItems: "center" }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 4, padding: 12 }}>
           <Text style={{ fontSize: 22, color: "#3B82F6" }}>←</Text>
         </TouchableOpacity>
         <Text style={{ fontSize: 16, color: "#3B82F6", fontWeight: "600" }}>STEMM Lab</Text>
