@@ -1,14 +1,13 @@
 import { Text, View, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import ScreenContainer from "../../src/components/ScreenContainer";
-import CustomButton from "../../src/components/CustomButton";
 import { useAccessibility } from "../../src/context/AccessibilityContext";
 import { useAuth } from "../../src/context/AuthContext";
 
 export default function HomeScreen() {
   const router = useRouter();
   const { colors, fontSize, fontFamily } = useAccessibility();
-  const { teamName, teamCode, logout } = useAuth();
+  const { teamName, teamCode, memberNames, logout } = useAuth();
 
   const t = (size: number, extra?: object) => ({
     fontSize: size + (fontSize - 14),
@@ -18,19 +17,19 @@ export default function HomeScreen() {
 
   return (
     <ScreenContainer>
-      <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 70 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 30 }}>
-          <Text style={{ ...t(18), color: colors.primary, fontWeight: "600", flex: 1, textAlign: "center" }}>
+      <View style={{ flex: 1, paddingHorizontal: 24 }}>
+
+        {/* Top bar */}
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: 60, marginBottom: 8 }}>
+          <Text style={{ ...t(17), color: colors.primary, fontWeight: "700", letterSpacing: 0.5 }}>
             STEMM Lab
           </Text>
           <TouchableOpacity
             onPress={logout}
             style={{
-              position: "absolute",
-              right: 0,
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 8,
+              paddingHorizontal: 14,
+              paddingVertical: 7,
+              borderRadius: 20,
               borderWidth: 1,
               borderColor: colors.border,
               backgroundColor: colors.card,
@@ -42,27 +41,86 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        <Text style={{ ...t(22), textAlign: "center", fontWeight: "700", marginBottom: 4, color: colors.textMain }}>
-          Welcome, {teamName || "Team"}
-        </Text>
+        {/* Hero section */}
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingBottom: 40 }}>
 
-        {!!teamCode && (
-          <Text style={{ ...t(13), textAlign: "center", color: colors.textSub, marginBottom: 36 }}>
-            Team Code: {teamCode}
+          {/* Icon circle */}
+          <View style={{
+            width: 88,
+            height: 88,
+            borderRadius: 44,
+            backgroundColor: colors.primary + "18",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 28,
+          }}>
+            <Text style={{ fontSize: 40 }}>🔬</Text>
+          </View>
+
+          {/* Welcome heading */}
+          <Text style={{ ...t(28), fontWeight: "800", color: colors.textMain, textAlign: "center", marginBottom: 6, letterSpacing: -0.5 }}>
+            Welcome back,
           </Text>
-        )}
+          <Text style={{ ...t(28), fontWeight: "800", color: colors.primary, textAlign: "center", marginBottom: 20, letterSpacing: -0.5 }}>
+            {teamName || "Team"}
+          </Text>
 
-        {!teamCode && <View style={{ marginBottom: 36 }} />}
+          {/* Team info pill */}
+          {!!teamCode && (
+            <View style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: colors.card,
+              borderWidth: 1,
+              borderColor: colors.border,
+              borderRadius: 20,
+              paddingHorizontal: 16,
+              paddingVertical: 7,
+              marginBottom: 10,
+              gap: 6,
+            }}>
+              <Text style={{ ...t(12), color: colors.textSub }}>Team Code</Text>
+              <View style={{ width: 1, height: 12, backgroundColor: colors.border }} />
+              <Text style={{ ...t(12), color: colors.primary, fontWeight: "700", letterSpacing: 1 }}>
+                {teamCode}
+              </Text>
+            </View>
+          )}
 
-        <CustomButton
-          title="Start Activity"
-          onPress={() => router.push("/activity-hub")}
-        />
+          {/* Member count */}
+          {memberNames.length > 0 && (
+            <Text style={{ ...t(13), color: colors.textSub, marginBottom: 44 }}>
+              {memberNames.length} member{memberNames.length !== 1 ? "s" : ""}
+            </Text>
+          )}
 
-        <CustomButton
-          title="Upload Experiment"
-          onPress={() => router.push("/activity-hub")}
-        />
+          {!memberNames.length && <View style={{ marginBottom: 44 }} />}
+
+          {/* Primary CTA */}
+          <TouchableOpacity
+            onPress={() => router.push("/activity-hub")}
+            activeOpacity={0.85}
+            style={{
+              backgroundColor: colors.primary,
+              paddingVertical: 18,
+              paddingHorizontal: 40,
+              borderRadius: 16,
+              width: "100%",
+              alignItems: "center",
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.3,
+              shadowRadius: 12,
+              elevation: 6,
+              marginBottom: 16,
+            }}
+          >
+            <Text style={{ ...t(16), color: "#fff", fontWeight: "700", letterSpacing: 0.3 }}>
+              Start Activity
+            </Text>
+          </TouchableOpacity>
+
+        </View>
       </View>
     </ScreenContainer>
   );
