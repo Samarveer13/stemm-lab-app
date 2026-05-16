@@ -15,7 +15,6 @@ import {
   FONT_FAMILY_MAP,
 } from "../../src/context/AccessibilityContext";
 import { useAuth } from "../../src/context/AuthContext";
-import { scheduleLocalNotification } from "../../src/services/notificationService";
 
 // ── sub-components ────────────────────────────────────────────────────────────
 
@@ -200,26 +199,6 @@ export default function SettingsScreen() {
           >
             Preview — The Quick Brown Fox Jumps Over The Lazy Dog.
           </Text>
-        </View>
-
-        {/* ── Notifications ── */}
-        <SectionHeader label="Notifications" color={colors.sectionLabel} />
-
-        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={[styles.rowLabel, { color: colors.textMain, marginBottom: 2 }]}>
-            Test Notification
-          </Text>
-          <Text style={[styles.rowDesc, { color: colors.textSub, marginBottom: 16 }]}>
-            Send a local notification to verify alerts are working
-          </Text>
-          <TouchableOpacity
-            onPress={() => scheduleLocalNotification("STEMM Lab", "Notification is working!", 1)}
-            style={[styles.logoutButton, { borderColor: colors.primary }]}
-            accessibilityRole="button"
-            accessibilityLabel="Test notification"
-          >
-            <Text style={[styles.logoutText, { color: colors.primary }]}>Send Test Notification</Text>
-          </TouchableOpacity>
         </View>
 
         {/* ── Account ── */}
