@@ -33,6 +33,10 @@ yarn-error.*
 # local env files
 .env*.local
 
+# credentials and secrets — include these manually in submission zip
+src/config/secrets.ts
+app.secrets.json
+
 # typescript
 *.tsbuildinfo
 
