@@ -1,25 +1,48 @@
 {
   "expo": {
-    "name": "temp-app",
+    "name": "STEMM Lab",
     "slug": "temp-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "tempapp",
+    "scheme": "stemmlab",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.stemmlab.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSMicrophoneUsageDescription": "Used to measure sound levels for the Sound Pollution Hunter activity.",
+        "NSLocationWhenInUseUsageDescription": "Used to tag your STEMM activities with your current location.",
+        "NSLocationAlwaysUsageDescription": "Used to tag your STEMM activities with your current location.",
+        "NSMotionUsageDescription": "Used to detect movement and breathing patterns during STEMM activities."
+      }
     },
     "android": {
+      "package": "com.stemmlab.app",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION",
+        "android.permission.CAMERA"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBMrOtv1XYe4b0crtdsTBxqputfXfVurDQ"
+        }
+      }
     },
     "web": {
       "output": "static",
@@ -38,11 +61,58 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      "expo-av",
+      "expo-sqlite",
+      "expo-background-task",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Used to tag your STEMM activities with your current location.",
+          "locationWhenInUsePermission": "Used to tag your STEMM activities with your current location.",
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Used to detect movement and breathing patterns during STEMM activities."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "sounds": []
+        }
+      ],
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Used to capture photos during STEMM activities."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Used to select photos for your STEMM activity profile."
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a4ec1f94-e5e6-4d7e-aa67-32ed3441cfe8"
+      }
+    },
+    "owner": "sammy1313"
   }
 }

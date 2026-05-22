@@ -1,98 +1,130 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Text, View, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
+import ScreenContainer from "../../src/components/ScreenContainer";
+import { useAccessibility } from "../../src/context/AccessibilityContext";
+import { useAuth } from "../../src/context/AuthContext";
+import AdBanner from "../../src/components/AdBanner";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const { colors, fontSize, fontFamily } = useAccessibility();
+  const { teamName, teamCode, memberNames, logout } = useAuth();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const t = (size: number, extra?: object) => ({
+    fontSize: size + (fontSize - 14),
+    fontFamily,
+    ...extra,
+  });
+
+  return (
+    <ScreenContainer>
+      <View style={{ flex: 1, paddingHorizontal: 24 }}>
+
+        {/* Top bar */}
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: 60, marginBottom: 8 }}>
+          <Text style={{ ...t(17), color: colors.primary, fontWeight: "700", letterSpacing: 0.5 }}>
+            STEMM Lab
+          </Text>
+          <TouchableOpacity
+            onPress={logout}
+            style={{
+              paddingHorizontal: 14,
+              paddingVertical: 7,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.card,
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Log out"
+          >
+            <Text style={{ ...t(12), color: colors.textSub, fontWeight: "600" }}>Log out</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Hero section */}
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingBottom: 40 }}>
+
+          {/* Icon circle */}
+          <View style={{
+            width: 88,
+            height: 88,
+            borderRadius: 44,
+            backgroundColor: colors.primary + "18",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 28,
+          }}>
+            <Text style={{ fontSize: 40 }}>🔬</Text>
+          </View>
+
+          {/* Welcome heading */}
+          <Text style={{ ...t(28), fontWeight: "800", color: colors.textMain, textAlign: "center", marginBottom: 6, letterSpacing: -0.5 }}>
+            Welcome back,
+          </Text>
+          <Text style={{ ...t(28), fontWeight: "800", color: colors.primary, textAlign: "center", marginBottom: 20, letterSpacing: -0.5 }}>
+            {teamName || "Team"}
+          </Text>
+
+          {/* Team info pill */}
+          {!!teamCode && (
+            <View style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: colors.card,
+              borderWidth: 1,
+              borderColor: colors.border,
+              borderRadius: 20,
+              paddingHorizontal: 16,
+              paddingVertical: 7,
+              marginBottom: 10,
+              gap: 6,
+            }}>
+              <Text style={{ ...t(12), color: colors.textSub }}>Team Code</Text>
+              <View style={{ width: 1, height: 12, backgroundColor: colors.border }} />
+              <Text style={{ ...t(12), color: colors.primary, fontWeight: "700", letterSpacing: 1 }}>
+                {teamCode}
+              </Text>
+            </View>
+          )}
+
+          {/* Member count */}
+          {memberNames.length > 0 && (
+            <Text style={{ ...t(13), color: colors.textSub, marginBottom: 44 }}>
+              {memberNames.length} member{memberNames.length !== 1 ? "s" : ""}
+            </Text>
+          )}
+
+          {!memberNames.length && <View style={{ marginBottom: 44 }} />}
+
+          {/* Primary CTA */}
+          <TouchableOpacity
+            onPress={() => router.push("/activity-hub")}
+            activeOpacity={0.85}
+            style={{
+              backgroundColor: colors.primary,
+              paddingVertical: 18,
+              paddingHorizontal: 40,
+              borderRadius: 16,
+              width: "100%",
+              alignItems: "center",
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.3,
+              shadowRadius: 12,
+              elevation: 6,
+              marginBottom: 16,
+            }}
+          >
+            <Text style={{ ...t(16), color: "#fff", fontWeight: "700", letterSpacing: 0.3 }}>
+              Start Activity
+            </Text>
+          </TouchableOpacity>
+
+        </View>
+
+        <AdBanner />
+      </View>
+    </ScreenContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});

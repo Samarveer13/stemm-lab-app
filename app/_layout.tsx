@@ -1,24 +1,55 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { Stack, useRouter, useSegments } from "expo-router";
+import { useEffect } from "react";
+import { AccessibilityProvider } from "../src/context/AccessibilityContext";
+import { AuthProvider, useAuth } from "../src/context/AuthContext";
+import { useNotifications } from "../src/hooks/useNotifications";
+import { MessageProvider } from "../src/context/MessageContext";
+import BroadcastBanner from "../src/components/BroadcastBanner";
+import { registerStemmBackgroundTask } from "../src/services/backgroundTaskService";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+function RootNavigator() {
+  const { user, loading, teamReady } = useAuth();
+  useNotifications();
+  const segments = useSegments();
+  const router = useRouter();
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+  useEffect(() => {
+    registerStemmBackgroundTask();
+  }, []);
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    if (loading) return;
+
+    const inAuthGroup = segments[0] === "(auth)";
+    const inTeamSetup = segments[0] === "team-setup";
+    const inTabs = segments[0] === "(tabs)";
+    const inActivities = segments[0] === "activities";
+
+    if (!user) {
+      if (!inAuthGroup) router.replace("/(auth)/login");
+    } else if (!teamReady) {
+      if (!inTeamSetup) router.replace("/team-setup");
+    } else {
+      if (!inTabs && !inActivities) router.replace("/(tabs)");
+    }
+  }, [user, loading, teamReady, segments]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <>
+      <BroadcastBanner />
+      <Stack screenOptions={{ headerShown: false }} />
+    </>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AccessibilityProvider>
+      <AuthProvider>
+        <MessageProvider>
+          <RootNavigator />
+        </MessageProvider>
+      </AuthProvider>
+    </AccessibilityProvider>
   );
 }
