@@ -144,19 +144,6 @@ export async function getLeaderboard(limitCount = 10): Promise<LeaderboardEntry[
 
 // ── Activity Results ──────────────────────────────────────────────────────────
 
-export async function saveActivityResult(
-  result: Omit<ActivityResult, "completedAt">
-): Promise<void> {
-  await addDoc(collection(db, "activityResults"), {
-    ...result,
-    completedAt: serverTimestamp(),
-  });
-  await updateDoc(doc(db, "teams", result.teamId), {
-    totalScore: increment(result.score),
-    experimentsCompleted: increment(1),
-  });
-}
-
 // Used by syncService — returns the new Firestore doc ID
 export async function syncActivityResult(
   result: Omit<ActivityResult, "completedAt">
