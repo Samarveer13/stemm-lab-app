@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import ScreenContainer from "../../src/components/ScreenContainer";
 import ActivitySubmitCard from "../../src/components/ActivitySubmitCard";
+import { Card, Title, Body, Bullet, InputField } from "../../src/components/ActivityShared";
 
 const TAB_LABELS = ["Overview", "Phase 1", "Phase 2", "Phase 3", "Results", "Science"];
 
@@ -347,29 +348,3 @@ export default function ReactionScreen() {
   );
 }
 
-function Card({ children }: { children: React.ReactNode }) {
-  return <View style={{ backgroundColor: "#fff", borderRadius: 14, borderWidth: 1, borderColor: "#E5E7EB", padding: 16, marginBottom: 14 }}>{children}</View>;
-}
-function Title({ children }: { children: React.ReactNode }) {
-  return <Text style={{ fontSize: 15, fontWeight: "700", color: "#1F2937", marginBottom: 10 }}>{children}</Text>;
-}
-function Body({ children }: { children: React.ReactNode }) {
-  return <Text style={{ fontSize: 14, color: "#4B5563", lineHeight: 21 }}>{children}</Text>;
-}
-function Bullet({ text, bullet = "•" }: { text: string; bullet?: string }) {
-  return (
-    <View style={{ flexDirection: "row", gap: 8, marginBottom: 6, alignItems: "flex-start" }}>
-      <Text style={{ fontSize: 14, color: "#9CA3AF" }}>{bullet}</Text>
-      <Text style={{ fontSize: 14, color: "#4B5563", lineHeight: 21, flex: 1 }}>{text}</Text>
-    </View>
-  );
-}
-function InputField({ label, value, onChange, placeholder, keyboardType = "default" }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; keyboardType?: "default" | "decimal-pad" }) {
-  return (
-    <View style={{ marginBottom: 8 }}>
-      <Text style={{ fontSize: 12, color: "#6B7280", marginBottom: 3 }}>{label}</Text>
-      <TextInput value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor="#D1D5DB" keyboardType={keyboardType}
-        style={{ borderWidth: 1, borderColor: "#E5E7EB", borderRadius: 8, paddingVertical: 7, paddingHorizontal: 10, fontSize: 14, color: "#111827", backgroundColor: "#FAFAFA" }} />
-    </View>
-  );
-}
